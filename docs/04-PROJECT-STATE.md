@@ -1,78 +1,117 @@
 # Rasputin — Project State
 
-> **Updated:** 2026-08-26  
-> **Architecture:** v6.0-alpha  
-> **Development mode:** ACTIVE ALPHA / Backend lane
+> **Updated:** 2026-09-09  
+> **Architecture:** v7.0 Strategic Migration  
+> **Development mode:** R0 ARCHITECTURE / CONTRACT MIGRATION
 
 ## Control State
 
 ```text
-CORE-0 Architecture/Contracts     ACCEPTED
-Master development workflow       FROZEN
-Backend lane                      OPEN
-Frontend lane                     BLOCKED
-Integration/Test lane             BLOCKED
-GitHub/Release lane               BLOCKED
+v5.0 historical full-domain vision        FROZEN
+v6.0-alpha execution-economics baseline   PRESERVED
+v7.0 strategic target                     ACTIVE
+GATE-V7-R0                                OPEN
+v7 contracts                              UNFROZEN / MIGRATING
+Backend semantic implementation           PAUSED pending GATE-V7-R0
+Frontend                                  BLOCKED
+Integration/Test                          BLOCKED
+GitHub/Release                            BLOCKED
 ```
 
-## Accepted Documents
+## Strategic Change
 
-- README.md
-- docs/ARCHITECTURE.md
-- docs/PRE_DEVELOPMENT.md
-- docs/GATE_CORE_0.md
-- docs/contracts/EXECUTION_SCHEMA.md
-- docs/contracts/POLICY_CONTRACT.md
-- docs/contracts/EVIDENCE_CONTRACT.md
-- docs/00-PROJECT-CONTROL.md
-- docs/01-MASTER-TECHNICAL-DESIGN.md
-- docs/02-DELIVERY-BOARD.md
-- docs/03-DEVELOPMENT-WORKFLOW.md
-- docs/roles/BACKEND.md
-- docs/roles/FRONTEND.md
-- docs/roles/INTEGRATION.md
-- docs/roles/GITHUB_RELEASE.md
+Rasputin is now defined as a **Sovereign Computational Capital Control Plane** rather than a per-task Agent resource router.
+
+The retained v6 kernel concepts are:
+
+```text
+Execution
+Policy / Authority
+Resource selection
+Runtime supervision
+Telemetry
+Evidence
+Quality
+Optimization
+```
+
+The v7 expansion adds:
+
+```text
+Workload Portfolio
+Computational Capital
+Resource Intelligence
+Shadow Pricing
+Budget Ledgers
+Outcome Intelligence
+Failure Intelligence
+Red-Blue Adversarial Assurance
+Adaptive Recovery / Economic Self-Healing
+Risk Budget
+Irreversibility Budget
+Recovery Budget
+Portfolio Reallocation
+RCB / RARB benchmarks
+```
 
 ## Current Objective
 
-Build R0 as a strong headless Rasputin Core before UI work.
-
-Target R0 chain:
+Complete R0 migration:
 
 ```text
-Task
- -> Policy
- -> Candidate Strategies
- -> Economics/Router
- -> Execution
- -> Tool Invocation
- -> Telemetry
- -> Quality
- -> Evidence
- -> Strategy Comparison
- -> Optimization Recommendation
+Constitution
+ -> Architecture
+ -> Project Control
+ -> Contract migration
+ -> Threat / Failure Model
+ -> Capital / Budget Model
+ -> Red-Blue / Recovery semantics
+ -> Delivery Board
+ -> GATE-V7-R0 acceptance
 ```
 
 ## Current Admission
 
-**Admitted:** `BE-0 Engineering Baseline`.
+**Admitted:** documentation and contract migration work only, plus implementation-neutral engineering preparation.
 
-Frontend must not start production implementation until `GATE-BE-R0` passes.
+**Not admitted:** production code that hard-binds Rasputin to superseded v6 Task/Router-only semantics.
+
+## Core Target Chain
+
+```text
+Principal / Organization
+ -> Workload Portfolio
+ -> Authority / Policy
+ -> Resource Intelligence
+ -> Computational Capital Allocation
+ -> Execution Strategy
+ -> Sovereign Execution Control
+ -> Telemetry / Evidence / Failure
+ -> Outcome / Economic Value
+ -> Learning / Recovery / Reallocation
+```
+
+Cross-cutting loops:
+
+```text
+Red-Blue Adversarial Assurance
+Adaptive Recovery & Self-Healing
+```
 
 ## Strategic Strength Standard
 
-Rasputin is explicitly optimized for infrastructure depth:
+Rasputin must become strong through depth in:
 
-- reliable contracts;
-- economic routing;
-- enforceable governance;
+- portfolio-level capital allocation;
+- explicit shadow pricing and scarcity;
+- enforceable execution authority;
+- real downstream outcome measurement;
+- provider/framework neutrality;
 - failure-aware execution;
-- cryptographic provenance;
-- measurable quality;
-- provider/framework independence;
-- local/private operation;
-- extensible MCP/tool boundaries;
-- safe optimization;
-- future attestation/A2A/zk-compliance compatibility.
+- bounded economic recovery;
+- adversarial testing of allocator/policy/runtime/data paths;
+- cryptographic and future attested evidence;
+- reproducible RCB / RARB benchmark evidence;
+- safe learning and rollback.
 
-The project will preserve the complete v5/v6 vision but implement it by dependency order rather than feature spectacle.
+Commodity technologies remain adapters unless a proven gap requires native implementation.
