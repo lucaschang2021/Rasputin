@@ -3,7 +3,7 @@
 > **Sovereign Computational Capital Control Plane**  
 > 面向 Agent 时代的计算资本配置、执行主权、对抗保证与自适应恢复基础设施。
 
-**Status:** v7.0 Strategic Migration / Pre-Implementation  
+**Status:** v7.0 Architecture Accepted · R1 Executable Contracts Active  
 **Runtime:** Local-first · Vendor-neutral · MCP/A2A-compatible  
 **Architecture:** Portfolio-first · Authority-first · Economics-driven · Evidence-backed · Adversarially tested  
 **License:** TBD
@@ -472,8 +472,8 @@ Capital Reallocation Efficiency
 
 | Stage | Objective |
 |---|---|
-| R0 | Strategic Constitution + Threat/Economic Model + contract migration |
-| R1 | Canonical Workload / Execution / Resource / Capital schemas |
+| R0 | Strategic Constitution + Threat/Economic Model + contract migration — **ACCEPTED** |
+| R1 | Canonical Workload / Execution / Resource / Capital schemas — **ACTIVE** |
 | R2 | OpenTelemetry-compatible telemetry + Computational Capital Ledger |
 | R3 | Resource Intelligence Registry |
 | R4 | Authority / Policy / Runtime Enforcement |
@@ -496,9 +496,9 @@ Capital Reallocation Efficiency
 
 - **v5.0** — historical full-domain vision; frozen.
 - **v6.0-alpha** — execution-economics migration baseline; superseded as strategic target but retained for migration history.
-- **v7.0** — active strategic and technical target.
+- **v7.0** — active strategic and technical target; `GATE-V7-R0` accepted on 2026-09-09.
 
-Current priority is **R0 architecture/contract migration**. Production backend implementation that would freeze v6 semantics must pause until v7 R0 is accepted.
+Current priority is **R1 executable canonical contracts**. R1 must implement the frozen v7 semantics without pulling forward R2+ features.
 
 ---
 
