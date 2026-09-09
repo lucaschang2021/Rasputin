@@ -1,204 +1,272 @@
-# Rasputin CORE-0 — Policy Engine Contract
+# Rasputin v7 — Authority & Policy Contract
 
-> Status: PRE-DEVELOPMENT / DRAFT FOR GATE-CORE-0  
-> Contract ID: CORE-0-CONTRACT-POLICY  
-> Version: 0.1.0-alpha
+> **Status:** R0 MIGRATION DRAFT  
+> **Contract ID:** V7-CONTRACT-AUTHORITY  
+> **Version:** 1.0.0-alpha
 
 ## 1. Purpose
 
-The Policy Engine defines the admissible execution space before Economics routing and execution. It is a governance boundary, not a recommendation system.
+The Authority & Policy Plane defines the admissible execution space before capital allocation and remains authoritative throughout execution and recovery.
+
+It is not a recommendation engine.
 
 ## 2. Inputs
 
 ```text
-Task
+Principal / Tenant Identity
+Portfolio / Workload
 Tenant / Workspace Policy
 Environment Policy
-Runtime Capability State
-Human Approval State (optional)
+Data Classification
+Resource State
+Budget State
+Risk / Irreversibility State
+Human Approval State
+Runtime Context
 ```
 
 ## 3. Outputs
 
 ```text
 PolicyDecision
+AuthorityEnvelope
 Normalized Constraints
 Allowed Resource Set
 Required Controls
+Budget Ceilings
 Approval Requirement
 Reason Codes
 ```
 
 ## 4. Policy Domains
 
-P0 policy domains:
-
-- budget
-- model allow/deny
-- tool allow/deny
-- harness allow/deny
-- privacy
-- verification
-- timeout
-- retry
-- human approval
-
-Future policy domains MAY include jurisdiction, data residency, identity assurance, regulatory classification and segregation-of-duties.
-
-## 5. Evaluation Order
+v7 domains include:
 
 ```text
-1. Validate task
-2. Apply hard deny rules
-3. Apply privacy restrictions
-4. Apply resource allowlists
-5. Apply budget limits
-6. Apply verification requirements
-7. Determine approval requirement
-8. Normalize constraints
-9. Emit PolicyDecision
+money / compute / quota budget
+model / resource allow-deny
+tool / capability allow-deny
+harness / runtime allow-deny
+privacy / data classification
+data egress / locality
+verification minimum
+latency / timeout
+retry ceiling
+recovery ceiling
+risk budget
+irreversibility budget
+human attention / approval
+identity assurance
+quarantine constraints
 ```
 
-Hard constraints MUST dominate optimization preferences.
+Future domains may include jurisdiction, segregation of duties, regulatory profiles and inter-org contract constraints.
 
-## 6. Decision Semantics
-
-### allow
-Task may proceed inside the normalized execution space.
-
-### deny
-Task MUST NOT execute.
-
-### allow_with_conditions
-Task may execute only if specified controls are satisfied.
-
-### require_human_approval
-Task is blocked pending an explicit approval artifact.
-
-## 7. Example Policy
+## 5. AuthorityEnvelope
 
 ```yaml
-policy_id: "policy_finance_research"
-version: "1.0.0"
-rules:
-  budget:
-    max_amount: 0.50
-    currency: "USD"
-  models:
-    allow: ["provider/model-a", "local/model-b"]
-  tools:
-    deny: ["trade.execute"]
-  privacy:
-    max_external_data_level: "internal"
-  verification:
-    minimum: "enhanced"
-  retries:
-    max: 2
-  human_approval:
-    required_for: ["trade.execute", "payment.send"]
+schema_version: "1.0.0"
+authority_envelope_id: "auth_..."
+workload_id: "wl_..."
+policy_decision_id: "poldec_..."
+principal_ref: "principal_..."
+created_at: "..."
+valid_until: null
+allowed_resources: []
+denied_resources: []
+allowed_capabilities: []
+denied_capabilities: []
+required_controls: []
+budget_limits:
+  money: null
+  compute: null
+  quota: null
+  latency: null
+  verification: null
+  human_attention: null
+  risk: null
+  irreversibility: null
+  recovery: null
+approval_requirement: null
+data_rules: {}
+recovery_rules: {}
+authority_hash: "sha256:..."
+extensions: {}
 ```
 
-## 8. Constraint Normalization
+## 6. PolicyDecision
 
-Policies from multiple scopes are combined conservatively.
+```yaml
+schema_version: "1.0.0"
+policy_decision_id: "poldec_..."
+workload_id: "wl_..."
+policy_id: "policy_..."
+policy_version: "..."
+decided_at: "..."
+result: "allow|deny|allow_with_conditions|require_human_approval"
+authority_envelope_id: "auth_..."
+reason_codes: []
+policy_hash: "sha256:..."
+extensions: {}
+```
 
-Examples:
+## 7. Evaluation Order
 
-- maximum budget = minimum of applicable maxima;
-- allowed models = intersection of applicable allowlists;
-- denied tools = union of applicable deny sets;
-- verification requirement = strongest applicable level;
-- approval requirement = required if any applicable rule requires it.
-
-If normalization produces an empty admissible resource set, the decision is `deny` with an explicit reason code.
-
-## 9. Reason Codes
-
-P0 reason codes SHOULD include:
+Default order:
 
 ```text
-POLICY_OK
-TASK_INVALID
-BUDGET_EXCEEDED
-MODEL_NOT_ALLOWED
-TOOL_NOT_ALLOWED
-HARNESS_NOT_ALLOWED
-PRIVACY_CONSTRAINT
-VERIFICATION_INSUFFICIENT
-APPROVAL_REQUIRED
-NO_ADMISSIBLE_STRATEGY
-TIMEOUT_CONSTRAINT
-RETRY_CONSTRAINT
+1. Validate workload / identity
+2. Apply hard deny rules
+3. Apply data / privacy / locality restrictions
+4. Apply capability / resource allowlists
+5. Apply monetary / compute / quota limits
+6. Apply risk / irreversibility limits
+7. Apply verification requirements
+8. Apply retry / recovery ceilings
+9. Determine human approval requirement
+10. Normalize constraints
+11. Emit PolicyDecision + AuthorityEnvelope
 ```
 
-## 10. Policy Hashing
+Hard constraints dominate economic optimization.
 
-The canonical serialized policy used for a decision MUST be hashed.
+## 8. Budget Semantics
 
-Evidence MUST be able to prove which policy version governed a run.
+Budgets are authority limits, not merely accounting targets.
+
+If a budget is hard, exhaustion MUST block additional consumption unless a new authorized budget artifact is produced.
+
+Applicable scopes may include:
 
 ```text
-policy_hash = SHA-256(canonical_policy_bytes)
+principal
+tenant
+portfolio
+workload
+run
+resource
+recovery episode
 ```
+
+More restrictive overlapping hard budgets dominate.
+
+## 9. Risk and Irreversibility
+
+`risk` and `irreversibility` are distinct.
+
+- **Risk Budget** captures bounded uncertain loss exposure.
+- **Irreversibility Budget** captures actions whose effects cannot be cheaply or reliably rolled back.
+
+An individually permitted action MUST still be denied if cumulative shared portfolio/tenant irreversibility would exceed the authorized limit.
+
+## 10. Recovery Authority
+
+Recovery does not create new authority.
+
+Rules:
+
+1. retry must remain inside retry and recovery budgets;
+2. alternate model/tool/harness must be inside the AuthorityEnvelope;
+3. privilege escalation requires a new approval or policy decision;
+4. degraded quality may occur only if policy explicitly permits a lower floor;
+5. resource quarantine may make an existing plan invalid;
+6. if no admissible recovery remains, the run must abort, defer or escalate.
 
 ## 11. Human Approval Contract
 
-Approval is a first-class artifact and MUST NOT be represented as an informal log message.
-
-Minimum conceptual fields:
+Approval is first-class:
 
 ```yaml
+schema_version: "1.0.0"
 approval_id: "approval_..."
-task_id: "task_..."
+workload_id: "wl_..."
 policy_decision_id: "poldec_..."
 approver_ref: "..."
 decision: "approve|reject"
 created_at: "..."
 scope: []
+budget_delta: null
+expires_at: null
 approval_hash: "sha256:..."
+extensions: {}
 ```
 
-P0 may use a local trusted approver identity. Strong identity/attestation is future work.
+An approval MUST have explicit scope and cannot be interpreted as blanket authority.
 
-## 12. Security Invariants
+## 12. Reason Codes
 
-1. Router MUST NOT widen policy constraints.
-2. Fallback execution MUST remain inside the same or stricter policy space.
-3. Tool adapters MUST receive effective policy restrictions where technically applicable.
-4. Policy version and hash MUST be bound into final evidence.
-5. A policy failure is not converted into a retry unless policy explicitly allows reevaluation.
-6. Unknown policy major versions fail closed.
+At minimum:
 
-## 13. Separation of Concerns
+```text
+POLICY_OK
+WORKLOAD_INVALID
+IDENTITY_UNVERIFIED
+BUDGET_EXCEEDED
+COMPUTE_BUDGET_EXCEEDED
+QUOTA_BUDGET_EXCEEDED
+RISK_BUDGET_EXCEEDED
+IRREVERSIBILITY_BUDGET_EXCEEDED
+RECOVERY_BUDGET_EXCEEDED
+RESOURCE_NOT_ALLOWED
+RESOURCE_QUARANTINED
+TOOL_NOT_ALLOWED
+CAPABILITY_NOT_ALLOWED
+HARNESS_NOT_ALLOWED
+PRIVACY_CONSTRAINT
+DATA_EGRESS_CONSTRAINT
+VERIFICATION_INSUFFICIENT
+APPROVAL_REQUIRED
+NO_ADMISSIBLE_STRATEGY
+TIMEOUT_CONSTRAINT
+RETRY_CONSTRAINT
+RECOVERY_CONSTRAINT
+```
 
-Policy answers:
+## 13. External Policy Backends
 
-> What is allowed?
+Rasputin MAY compile or delegate subsets of authorization logic to OPA/Rego, Cedar or future standards.
 
-Economics answers:
+External engines are adapters. Rasputin owns the normalized authority semantics for computational capital, budgets, risk, irreversibility and recovery.
 
-> Among allowed options, what is preferable?
+## 14. Security Invariants
 
-Execution answers:
+1. Allocator MUST NOT widen policy constraints.
+2. Strategy Compiler MUST NOT widen policy constraints.
+3. Fallback and recovery MUST remain in the same or stricter authority envelope.
+4. Tool/MCP/A2A adapters receive effective restrictions where technically applicable.
+5. Budget exhaustion is an execution control event, not just telemetry.
+6. Policy and AuthorityEnvelope hashes bind into final evidence.
+7. Unknown policy major versions fail closed.
+8. Quarantined resources cannot be selected until explicitly released.
+9. Human approval must be explicit and scoped.
+10. Red-team execution obeys a dedicated test authority envelope and cannot inherit production privilege by default.
 
-> Carry out the selected admissible plan.
+## 15. Required Tests
 
-Evidence answers:
+Before R4 acceptance:
 
-> What can be reconstructed or verified afterward?
-
-No component may collapse these four roles into an unreviewable monolith.
-
-## 14. CORE-1/4 Required Tests
-
-Before policy functionality is accepted, tests MUST include:
-
-- allowed model succeeds;
-- denied model cannot execute;
-- denied tool cannot execute;
+- allowed resource executes;
+- denied resource cannot execute;
+- denied tool/capability cannot execute;
+- budget exhaustion blocks dispatch;
+- cumulative irreversibility exhaustion blocks an otherwise legal action;
+- recovery cannot bypass original policy;
+- resource quarantine invalidates selection;
+- human approval blocks then permits only authorized scope;
 - overlapping policies normalize conservatively;
-- empty allowed set produces deny;
-- enhanced verification requirement excludes basic-only strategy;
-- human approval blocks then permits execution;
-- policy hash changes when material policy changes;
-- fallback cannot bypass original policy.
+- policy/authority hashes change on material change;
+- unknown major version fails closed.
+
+## 16. Separation of Concerns
+
+```text
+Policy / Authority: what may happen?
+Capital Allocator: what is worth funding among admissible options?
+Strategy Compiler: how should admitted capital be spent?
+Execution Control: carry out and enforce.
+Recovery: restore within authorized bounds.
+Evidence: what can be reconstructed/proven?
+Outcome: what value resulted?
+```
+
+These roles must not collapse into an unreviewable monolith.
