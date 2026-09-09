@@ -1,163 +1,224 @@
-# Rasputin CORE-0 — Canonical Execution Schema Contract
+# Rasputin v7 — Canonical Workload / Execution Contract
 
-> Status: PRE-DEVELOPMENT / DRAFT FOR GATE-CORE-0  
-> Contract ID: CORE-0-CONTRACT-EXECUTION  
-> Version: 0.1.0-alpha
+> **Status:** R0 MIGRATION DRAFT  
+> **Contract ID:** V7-CONTRACT-EXECUTION  
+> **Version:** 1.0.0-alpha
 
 ## 1. Purpose
 
-This contract defines the provider-independent canonical objects that connect Task intake, Policy evaluation, Economics routing, Execution, Telemetry, Evidence and Optimization.
+Defines provider-independent canonical objects connecting portfolio intake, authority, capital allocation, execution, telemetry, failure, recovery, outcome, evidence and learning.
 
-No runtime implementation may introduce a parallel execution schema without an explicit architecture decision.
+No runtime may introduce a parallel semantic execution model without an explicit architecture decision.
 
 ## 2. Design Rules
 
-1. IDs are globally unique within a Rasputin deployment.
-2. Provider-specific payloads live under extension namespaces; they do not replace canonical fields.
-3. Sensitive payloads SHOULD be referenced by content-addressed hashes or secure references rather than duplicated.
-4. Every material decision MUST be attributable to a policy version and execution plan.
-5. Every schema has an explicit `schema_version`.
+1. Every schema has explicit `schema_version`.
+2. IDs are stable and globally unique within a deployment.
+3. Provider-specific data lives under `extensions`.
+4. Sensitive payloads should be references or commitments where practical.
+5. Monetary values use explicit currency and implementation MUST avoid economically material floating-point ambiguity.
 6. Timestamps use UTC RFC 3339.
-7. Monetary amounts include currency.
-8. Immutable finalized records MUST NOT be edited in place; corrections create a successor record.
+7. Finalized immutable records are append-only; corrections create successor records.
+8. Every material execution is attributable to a PolicyDecision, CapitalAllocation and ExecutionPlan.
+9. Every recovery action is attributable to a RecoveryEpisode and remains policy-safe.
+10. Unknown major versions fail explicitly.
 
 ## 3. Canonical Object Graph
 
 ```text
-Task
-  |
-  v
-PolicyDecision
-  |
-  v
-ExecutionPlan
-  |
-  v
-Run
-  +--> TelemetryRecord[*]
-  +--> EvidenceRecord[*]
-  +--> QualityEvaluation[*]
+Principal
+  -> Portfolio
+      -> Workload[*]
+          -> PolicyDecision
+          -> CapitalAllocation
+          -> ExecutionPlan
+          -> Run[*]
+              +-> TelemetryRecord[*]
+              +-> FailureRecord[*]
+              +-> RecoveryEpisode[*]
+              +-> QualityEvaluation[*]
+              +-> OutcomeRecord[*]
+              +-> EvidenceRecord[*]
+  -> BudgetLedger[*]
+  -> ResourceState[*]
 ```
 
-## 4. Task
-
-Minimum canonical fields:
+## 4. Portfolio
 
 ```yaml
-schema_version: "0.1.0"
-task_id: "task_..."
-created_at: "2026-08-26T00:00:00Z"
-objective: "string"
-input_refs: []
-requested_capabilities: []
-constraints:
-  budget:
-    max_amount: 0.0
-    currency: "USD"
-  quality:
-    min_score: null
-    evaluator: null
-  risk_level: "low|medium|high|critical"
-  privacy_level: "public|internal|confidential|restricted"
-  verification_level: "none|basic|enhanced|attested|zk"
-  timeout_ms: null
+schema_version: "1.0.0"
+portfolio_id: "port_..."
+principal_ref: "principal_..."
+created_at: "..."
+name: "string"
+objective: "string|null"
+shared_budget_refs: []
+policy_refs: []
+workload_ids: []
+priority_model_ref: null
 metadata: {}
 extensions: {}
 ```
 
-Semantics:
+A portfolio is the resource competition domain. Shared budgets and scarcity may apply across all member workloads.
 
-- `objective` describes desired outcome, not implementation.
-- `input_refs` point to payloads, documents, data or context.
-- `requested_capabilities` describe capability needs such as `web.search`, `code.python`, `finance.market_data`.
-- constraints are declarative and MUST NOT encode provider-specific logic.
-
-## 5. PolicyDecision
+## 5. Workload
 
 ```yaml
-schema_version: "0.1.0"
-policy_decision_id: "poldec_..."
-task_id: "task_..."
-policy_id: "policy_..."
-policy_version: "1.0.0"
-decided_at: "..."
-result: "allow|deny|allow_with_conditions|require_human_approval"
-allowed_models: []
-allowed_tools: []
-allowed_harnesses: []
-required_controls: []
-normalized_constraints: {}
-reason_codes: []
-policy_hash: "sha256:..."
+schema_version: "1.0.0"
+workload_id: "wl_..."
+portfolio_id: "port_..."
+principal_ref: "principal_..."
+created_at: "..."
+objective: "string"
+input_refs: []
+requested_capabilities: []
+value:
+  expected: null
+  unit: null
+  value_model_ref: null
+  uncertainty: null
+priority: null
+deadline_at: null
+dependencies: []
+constraints:
+  budget_envelope_refs: []
+  quality:
+    min_score: null
+    evaluator_ref: null
+  risk_level: "low|medium|high|critical"
+  privacy_level: "public|internal|confidential|restricted"
+  irreversibility_level: "none|low|medium|high|critical"
+  verification_level: "none|basic|enhanced|attested|zk"
+  timeout_ms: null
+admission_state: "pending|admitted|deferred|rejected|cancelled|completed"
+metadata: {}
 extensions: {}
 ```
 
-Rules:
+`objective` states desired outcome, not implementation.
 
-- Policy is evaluated before final routing.
-- A denied task MUST NOT reach execution.
-- `reason_codes` are machine-readable.
-- Final evidence MUST reference `policy_decision_id` and `policy_hash`.
-
-## 6. ExecutionPlan
+## 6. Resource
 
 ```yaml
-schema_version: "0.1.0"
+schema_version: "1.0.0"
+resource_id: "res_..."
+resource_type: "model|agent|harness|tool|memory|retriever|verifier|human|runtime|compute|quota|router|other"
+provider_ref: null
+capabilities: []
+privacy_class: null
+risk_class: null
+verification_support: []
+metadata: {}
+extensions: {}
+```
+
+## 7. ResourceState
+
+```yaml
+schema_version: "1.0.0"
+resource_state_id: "rs_..."
+resource_id: "res_..."
+observed_at: "..."
+availability: "available|degraded|unavailable|quarantined"
+health_score: null
+quota_remaining: null
+quota_unit: null
+nominal_price: null
+currency: null
+latency_estimate_ms: null
+failure_rate: null
+shadow_price:
+  effective: null
+  components: {}
+attestation_ref: null
+metadata: {}
+extensions: {}
+```
+
+ResourceState is time-dependent. A plan selected under stale state MAY require revalidation before execution.
+
+## 8. CapitalAllocation
+
+```yaml
+schema_version: "1.0.0"
+allocation_id: "alloc_..."
+portfolio_id: "port_..."
+workload_id: "wl_..."
+policy_decision_id: "poldec_..."
+created_at: "..."
+decision: "execute|defer|do_not_execute|wait_for_information|require_human_approval"
+allocator_id: "..."
+allocator_version: "..."
+resource_state_refs: []
+allocated_budget_refs: []
+expected:
+  outcome_value: null
+  effective_cost: null
+  risk_adjusted_utility: null
+selection:
+  strategy_class: null
+  score: null
+  rationale_codes: []
+  uncertainty: null
+allocation_hash: "sha256:..."
+extensions: {}
+```
+
+Allocation is the explicit economic admission decision. `execute` is not assumed by default.
+
+## 9. ExecutionPlan
+
+```yaml
+schema_version: "1.0.0"
 execution_plan_id: "plan_..."
-task_id: "task_..."
+workload_id: "wl_..."
+allocation_id: "alloc_..."
 policy_decision_id: "poldec_..."
 created_at: "..."
 strategy:
-  model:
-    provider: "..."
-    model_id: "..."
-  agent: null
-  harness:
-    harness_id: "..."
-    harness_version: "..."
-  tools: []
+  venue_ref: null
+  model_ref: null
+  agent_topology: null
+  harness_ref: null
+  tool_refs: []
   memory:
     mode: "none|read|read_write"
     refs: []
   compute:
-    target: "local|cloud|hybrid"
-    runtime_id: null
+    runtime_ref: null
+    reasoning_effort: null
+    sampling_budget: null
   verification:
     level: "basic"
-    mechanism: []
+    mechanism_refs: []
+  recovery_policy_ref: null
+fallbacks: []
 expected:
-  cost:
-    amount: null
-    currency: "USD"
+  nominal_cost: null
+  effective_cost: null
   latency_ms: null
   quality_score: null
-fallbacks: []
-selection:
-  strategy_id: "..."
-  selector_version: "..."
-  score: null
-  rationale_codes: []
+  outcome_value: null
 plan_hash: "sha256:..."
 extensions: {}
 ```
 
-Rules:
+Fallbacks remain inside the same or stricter authority and budget envelope unless a new explicit decision is produced.
 
-- An execution plan is a concrete allocation decision.
-- Fallbacks MUST remain inside the allowed policy space.
-- Changing model, harness, tool set or verification level after execution starts creates a new plan revision or child run.
-
-## 7. Run
+## 10. Run
 
 ```yaml
-schema_version: "0.1.0"
+schema_version: "1.0.0"
 run_id: "run_..."
-task_id: "task_..."
+workload_id: "wl_..."
 execution_plan_id: "plan_..."
+allocation_id: "alloc_..."
 parent_run_id: null
 started_at: "..."
 ended_at: null
-status: "queued|running|succeeded|failed|cancelled|blocked"
+status: "queued|running|succeeded|failed|cancelled|blocked|recovering|quarantined"
+observed_resource_state_refs: []
 result_ref: null
 error:
   type: null
@@ -169,27 +230,25 @@ finalization:
 extensions: {}
 ```
 
-## 8. TelemetryRecord
-
-Telemetry records are append-only measurements.
+## 11. TelemetryRecord
 
 ```yaml
-schema_version: "0.1.0"
+schema_version: "1.0.0"
 telemetry_id: "tel_..."
 run_id: "run_..."
 observed_at: "..."
-type: "model_call|tool_call|cache|runtime|quality|custom"
+type: "model_call|tool_call|runtime|ledger|quality|security|recovery|custom"
 metrics:
   tokens_in: null
   tokens_out: null
-  cached_tokens: null
-  estimated_cost:
-    amount: null
-    currency: "USD"
+  estimated_money_cost: null
+  effective_cost: null
   latency_ms: null
   retry_count: 0
-  cache_hit: null
   success: null
+  risk_consumed: null
+  irreversibility_consumed: null
+  recovery_cost: null
 dimensions: {}
 source:
   adapter_id: "..."
@@ -197,61 +256,127 @@ source:
 extensions: {}
 ```
 
-## 9. QualityEvaluation
+## 12. FailureRecord
 
 ```yaml
-schema_version: "0.1.0"
+schema_version: "1.0.0"
+failure_id: "fail_..."
+run_id: "run_..."
+detected_at: "..."
+failure_class: "provider_unavailable|model_degraded|tool_failure|runtime_failure|policy_violation|quality_failure|verifier_disagreement|memory_corruption|context_poisoning|quota_exhaustion|latency_degradation|security_incident|outcome_failure|unknown"
+severity: "low|medium|high|critical"
+suspected_causes: []
+resource_refs: []
+blast_radius_refs: []
+evidence_refs: []
+extensions: {}
+```
+
+## 13. RecoveryEpisode
+
+```yaml
+schema_version: "1.0.0"
+recovery_id: "rec_..."
+failure_id: "fail_..."
+run_id: "run_..."
+started_at: "..."
+ended_at: null
+state: "detect|diagnose|contain|recover|verify|reallocate|learn|closed"
+actions: []
+recovery_budget_ref: null
+cost_consumed: null
+result: "recovered|degraded|aborted|escalated|failed|pending"
+new_plan_id: null
+portfolio_reallocation_ref: null
+verification_refs: []
+extensions: {}
+```
+
+A recovery plan MUST NOT widen policy authority by itself.
+
+## 14. QualityEvaluation
+
+```yaml
+schema_version: "1.0.0"
 quality_evaluation_id: "qual_..."
 run_id: "run_..."
-evaluator_id: "..."
-evaluator_version: "..."
+evaluator_ref: "..."
 created_at: "..."
 score: null
-scale:
-  min: 0
-  max: 1
+scale: {min: 0, max: 1}
 passed: null
 signals: {}
 evidence_refs: []
 extensions: {}
 ```
 
-Quality signals MUST identify their evaluator. Rasputin MUST NOT treat a model-generated confidence score as ground truth.
+A model-generated confidence score is not ground truth.
 
-## 10. Canonical Final Run Summary
+## 15. OutcomeRecord
 
-A finalized run MUST permit reconstruction of:
-
-```text
-what task was requested
-which policy governed it
-which strategy was selected
-what actually executed
-what it cost
-how long it took
-whether it succeeded
-how quality was evaluated
-what evidence proves the record was not silently changed
+```yaml
+schema_version: "1.0.0"
+outcome_id: "out_..."
+workload_id: "wl_..."
+run_refs: []
+observed_at: "..."
+technical_success: null
+task_success: null
+workflow_outcome: null
+downstream_event_refs: []
+realized_value:
+  amount: null
+  unit: null
+risk_adjustment: null
+attribution_confidence: null
+source_refs: []
+extensions: {}
 ```
 
-## 11. Versioning
+OutcomeRecord MAY be appended long after Run finalization.
 
-- Additive optional fields: minor version.
-- New required fields or changed semantics: major version.
-- Clarifications with no serialized impact: patch version.
-- Readers SHOULD reject unknown major versions.
-- Writers MUST write exactly one schema version per canonical object.
+## 16. Canonical Final Reconstruction
 
-## 12. CORE-1 Acceptance Fixtures
+A finalized workload history MUST permit reconstruction of:
 
-CORE-1 implementation MUST include at least:
+```text
+what outcome was requested
+what authority governed it
+why capital was or was not allocated
+which resources were selected
+what actually executed
+what it cost nominally and effectively
+what failed / recovered
+what risk / irreversibility was consumed
+how quality was evaluated
+what downstream outcome occurred
+what evidence supports the record
+```
 
-1. simple cloud model run;
-2. local-model run;
-3. tool-using run;
-4. denied-by-policy task;
-5. budget-constrained fallback run;
-6. failed run with retry;
-7. finalized run with evidence references.
+## 17. Migration from v6
 
-These fixtures are required before `GATE-CORE-1` can pass.
+```text
+v6 Task              -> v7 Workload
+v6 ExecutionPlan     -> v7 ExecutionPlan + CapitalAllocation
+v6 Run               -> v7 Run
+v6 TelemetryRecord   -> v7 TelemetryRecord
+v6 QualityEvaluation -> v7 QualityEvaluation
+v6 evidence refs     -> retained
+```
+
+New required v7 concepts are Portfolio, ResourceState, BudgetLedger, CapitalAllocation, FailureRecord, RecoveryEpisode and OutcomeRecord.
+
+## 18. R1 Acceptance Fixtures
+
+At minimum:
+
+1. portfolio with competing workloads;
+2. execute decision;
+3. do-not-execute decision;
+4. deferred workload due to scarce quota;
+5. allowed cloud execution;
+6. local/private execution;
+7. denied-by-policy workload;
+8. failed run with bounded recovery;
+9. quarantined resource and reallocation;
+10. delayed business outcome attached after finalization.

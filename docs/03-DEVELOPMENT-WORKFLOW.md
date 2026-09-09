@@ -1,6 +1,6 @@
-# Rasputin — Development Workflow
+# Rasputin v7 — Development Workflow
 
-> **Immutable execution order:** Backend → Frontend → Integration/Test → GitHub/Release.
+> **Immutable execution order:** Controller/Architecture Gate → Backend → Frontend → Integration/Test/Red-Blue/Recovery → GitHub/Release.
 
 ## 1. Five-Role Operating Model
 
@@ -9,17 +9,17 @@ Rasputin uses five persistent development roles:
 1. **Controller / 总控**
 2. **Backend / 后端**
 3. **Frontend / 前端**
-4. **Integration & Test / 前后端整合与检测修复**
+4. **Integration, Test & Assurance / 整合、测试、红蓝与恢复验证**
 5. **GitHub & Release / 上传与发布**
 
-The Controller is always active. The other four lanes are stage-gated.
+The Controller is always active. All implementation lanes are stage-gated.
 
 ## 2. Controller Loop
 
-For each work package:
-
 ```text
 READ CURRENT STATE
+   ↓
+CHECK ACTIVE ARCHITECTURE / CONTRACT GATE
    ↓
 FREEZE SCOPE
    ↓
@@ -28,6 +28,8 @@ DISPATCH OWNER
 OWNER IMPLEMENTS
    ↓
 OWNER RETURNS EVIDENCE
+   ↓
+TEST / FAILURE INJECTION / ASSURANCE AS REQUIRED
    ↓
 CONTROLLER REVIEWS
    ↓
@@ -38,14 +40,33 @@ UPDATE PROJECT STATE
 UNLOCK NEXT LANE
 ```
 
-The Controller does not casually edit implementation while reviewing. It should preserve role separation and use evidence to make decisions.
+The Controller owns strategic and contract decisions; implementation agents do not silently redefine them.
 
-## 3. Backend Stage
+## 3. Architecture / Contract Gate
+
+Before a release train can implement semantics, the active architecture and required contracts must be accepted.
+
+For v7 migration this is `GATE-V7-R0`.
+
+If a coding task discovers a strategic contradiction:
+
+```text
+STOP
+ -> record conflict
+ -> return to Controller
+ -> update architecture/contracts
+ -> re-run gate
+ -> resume
+```
+
+No feature code may become the accidental source of truth.
+
+## 4. Backend Stage
 
 Backend receives:
 
 - accepted architecture;
-- frozen contracts;
+- frozen contracts for the active stage;
 - exact work package;
 - tests/gate conditions;
 - explicit forbidden scope.
@@ -56,126 +77,121 @@ Backend returns:
 Summary
 Changed files
 API/schema changes
+Capital / authority impact
 Tests run
-Results
+Failure cases
+Security / recovery observations
 Performance notes
-Security notes
 Known limitations
 Commit/branch state
 Gate evidence
 ```
 
-Backend may not ask Frontend to compensate for unstable contracts.
+Backend cannot ask Frontend or Integration to compensate for unstable contracts or authority leaks.
 
-### Backend completion rule
+## 5. Frontend Stage
 
-Backend stage is not complete when individual modules pass. It is complete when the **headless system path** works end-to-end and `GATE-BE-*` is accepted.
+Frontend begins only against accepted user-facing backend contracts.
 
-## 4. Frontend Stage
+Rules:
 
-Frontend starts only against an accepted backend baseline.
-
-Frontend rules:
-
-- treat backend contracts as source of truth;
-- no fake endpoint shapes that later become de facto backend requirements;
+- backend contracts remain source of truth;
 - mock data must conform to accepted schemas;
-- all loading/error/denied/timeout states are designed;
-- do not expose raw hidden reasoning traces;
-- economics/evidence displays must distinguish measured facts from estimates.
+- distinguish measured, inferred, authorized and proven facts;
+- expose allocation reason codes without inventing explanations;
+- surface resource health, recovery and assurance state where relevant;
+- never expose hidden chain-of-thought;
+- design denied, deferred, exhausted-budget, quarantined and recovery states.
 
-Frontend returns the same evidence structure plus screenshots or interaction proof where useful.
+## 6. Integration, Test & Assurance Stage
 
-## 5. Integration & Test Stage
+Integration owns system behavior across components.
 
-Integration owns the whole system rather than one code area.
-
-Responsibilities:
-
-- merge/assemble accepted backend and frontend states;
-- run contract tests;
-- run E2E flows;
-- inject failures;
-- identify ownership of defects;
-- repair only genuine integration glue locally;
-- route backend defects back to Backend;
-- route frontend defects back to Frontend;
-- repeat until system gate passes.
-
-Integration must test not only the happy path but:
+Required test families may include:
 
 ```text
-provider failure
-network timeout
-tool failure
+contract compatibility
+end-to-end workload / portfolio flows
+budget concurrency
+provider / tool / runtime failures
+resource-state staleness
 policy denial
-budget exhaustion
-bad schema
-retries
-restart/recovery
-duplicate requests
-evidence corruption attempts
-frontend disconnect/reload
+risk / irreversibility exhaustion
+recovery-budget exhaustion
+quarantine
+restarts / idempotency
+telemetry/evidence corruption attempts
+red-blue scenarios
+controlled chaos
+shadow-mode safety
+frontend reconnect / reload
 ```
 
-## 6. GitHub / Release Stage
+### Red-Blue Rule
 
-GitHub/Release begins after Integration ACCEPT.
+Security-sensitive releases must include bounded adversarial scenarios targeting the relevant planes. Red-team components use explicit test authority and cannot inherit production privilege by default.
+
+### Recovery Rule
+
+Any feature claiming resilience must demonstrate:
+
+```text
+DETECT -> DIAGNOSE -> CONTAIN -> RECOVER -> VERIFY
+```
+
+and, where systemic, portfolio reallocation behavior.
+
+Successful recovery does not erase failure evidence.
+
+## 7. Benchmark Rule
+
+Optimization, capital-allocation, recovery or safety claims require reproducible evidence.
+
+Use as applicable:
+
+- **RCB** — Rasputin Capital Benchmark;
+- **RARB** — Rasputin Adversarial & Resilience Benchmark.
+
+A benchmark result must include workload definition, baseline, allocator/policy versions, resource-state snapshot or reproducible fixture, raw metrics and known limitations.
+
+## 8. GitHub / Release Stage
+
+GitHub/Release begins only after the relevant system gate is accepted.
 
 Responsibilities:
 
 - repository hygiene;
 - final diff audit;
 - branch/PR management;
-- CI status;
+- CI/check status;
 - documentation synchronization;
+- migration notes;
 - changelog/release notes;
 - tags/releases when authorized;
 - final main synchronization.
 
-GitHub role does not redesign features and does not merge known P0 defects.
+Release does not redesign architecture or hide known defects.
 
-## 7. Branch / Worktree Pattern
+## 9. Branch / Worktree Pattern
 
-Recommended pattern, matching the proven isolated workflow:
-
-```text
-Rasputin/                    main
-Rasputin-wt/backend/         feat/be-<release>
-Rasputin-wt/frontend/        feat/fe-<release>
-Rasputin-wt/integration/     fix/integration-<release>
-Rasputin-wt/github/          ops/github-<release>
-```
-
-Controller can operate from main/docs and review all lanes.
-
-Suggested branch lifecycle:
+Recommended pattern:
 
 ```text
-main
-  ↓ branch
-feat/be-r0
-  ↓ accepted + merged
-main
-  ↓ sync frontend base
-feat/fe-r0
-  ↓ accepted + merged
-main
-  ↓ integration branch
-fix/integration-r0
-  ↓ accepted + merged
-main
-  ↓ release audit
-ops/github-r0
-  ↓ final release
-main
+main                               accepted state
+feat/v7-*                          architecture / strategic migration
+feat/r1-*                          executable contracts
+feat/r2-*                          capital ledger / telemetry
+feat/rN-*                          stage implementation
+fix/integration-*                  integration/test repair
+fix/assurance-*                    red-blue/recovery repair
+ops/release-*                      release operations
 ```
 
-This serial merge discipline intentionally prioritizes correctness over maximum parallelism.
+Stage branches should start from the latest accepted main baseline unless Controller explicitly authorizes otherwise.
 
-## 8. Codex Window Prompts
+## 10. Codex / Coding-Agent Window Prompt
 
-Each Codex window should begin by reading:
+Every implementation window should read at minimum:
 
 ```text
 README.md
@@ -183,53 +199,59 @@ docs/00-PROJECT-CONTROL.md
 docs/01-MASTER-TECHNICAL-DESIGN.md
 docs/02-DELIVERY-BOARD.md
 docs/03-DEVELOPMENT-WORKFLOW.md
+docs/04-PROJECT-STATE.md
+active gate document
 relevant contracts
-its role document
-current admission/work-package document
+active work package
+role document
 ```
 
-Then it must report:
+Before implementation it reports:
 
 ```text
 understood scope
 current branch/worktree
+active gate and admission state
 dependencies
 planned files
 planned tests
-risks
+failure / security risks
+contract questions
 ```
 
-before implementation.
+## 11. No-Drift Rule
 
-## 9. No-Drift Rule
+No implementation agent may silently:
 
-If implementation discovers a contract/architecture problem:
+- widen policy;
+- change a hard budget semantic;
+- collapse CapitalAllocation into routing;
+- convert Recovery into unbounded retry;
+- treat Multi-Agent as mandatory architecture;
+- add provider-specific fields to canonical contracts outside extensions;
+- weaken evidence strength labels;
+- remove failure history after recovery.
 
-1. stop the affected change;
-2. record the conflict;
-3. return to Controller;
-4. Controller issues an architecture decision;
-5. update docs/contracts;
-6. resume implementation.
+Any such need returns to Controller.
 
-Do not silently evolve contracts inside feature code.
+## 12. Strong-System Rule
 
-## 10. Strong-System Rule
-
-Rasputin's power must come from reliable capabilities, not demos.
-
-A feature is considered strong only when it has:
+A major subsystem is strong only when it has:
 
 ```text
 contract
 implementation
 tests
 failure handling
+authority boundary
+capital / cost accounting
 observability
-security boundary
+evidence
+security / assurance coverage
+recovery behavior where applicable
 performance understanding
 documentation
 integration proof
 ```
 
-This is the standard for every important subsystem.
+Rasputin's power must come from reliable depth, not feature count.

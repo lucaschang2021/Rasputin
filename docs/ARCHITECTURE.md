@@ -1,287 +1,600 @@
-# Rasputin v6.0-alpha — Technical Architecture
+# Rasputin v7.0 — Technical Architecture
 
-> Status: PRE-DEVELOPMENT  
-> Architecture mode: controller-first / stage-gated / evidence-first  
-> Purpose: freeze contracts before implementation.
+> **Status:** R0 STRATEGIC MIGRATION / PRE-IMPLEMENTATION  
+> **Architecture mode:** portfolio-first · authority-first · stage-gated · evidence-backed · adversarially tested  
+> **Purpose:** freeze v7 architectural boundaries before implementation.
 
 ## 1. System Objective
 
-Rasputin is an Agent resource-allocation and execution-governance infrastructure layer.
+Rasputin is a **Sovereign Computational Capital Control Plane**.
 
-Its optimization target is:
+It allocates scarce AI resources across competing workloads, governs the resulting executions, measures real outcomes, survives failure, and learns how to reallocate capital safely.
+
+The portfolio-level objective is conceptually:
 
 ```text
-maximize Expected Task Utility
+maximize Risk-Adjusted Outcome Value
 subject to:
-  Cost <= Budget
-  Quality >= Q*
-  Risk <= R*
-  Verifiability >= V*
+  Monetary Cost <= Budget
+  Compute / Quota <= Capacity
+  Quality >= Required Floor
+  Risk <= Risk Budget
+  Irreversibility <= Irreversibility Budget
+  Verification <= Verification Capacity
+  Human Attention <= Human Budget
+  Recovery Spend <= Recovery Budget
+  Privacy / Authority / SLA constraints satisfied
 ```
 
-Execution policy π may allocate:
+A workload strategy may allocate:
 
 ```text
-Model + Agent + Harness + Tools + Memory + Compute + Verification
+pi = (
+  Model,
+  Agent Topology,
+  Harness,
+  Tools,
+  Memory,
+  Test-Time Compute,
+  Runtime,
+  Verification,
+  Recovery Policy
+)
 ```
 
-## 2. Architectural Boundaries
+`NULL / DO_NOT_EXECUTE / DEFER / WAIT_FOR_INFORMATION` are first-class allocation outcomes.
 
-### Rasputin owns
+---
 
-- canonical execution schema
-- task/policy contracts
-- routing decision interface
-- economics telemetry
-- evidence/provenance model
-- optimization feedback interface
-- governance decisions
-
-### Rasputin integrates
-
-- model gateways such as LiteLLM
-- MCP-compatible tools
-- orchestration runtimes such as LangGraph where appropriate
-- vector databases / RAG engines
-- local and cloud model providers
-- sandbox runtimes
-- identity / attestation providers
-- blockchain anchoring backends
-
-### Rasputin does not treat as moat
-
-- generic multi-agent chat
-- generic RAG
-- generic vector storage
-- generic LLM proxying
-- generic blockchain logging
-- generic code interpreter
-
-## 3. Core Components
-
-### 3.1 Task Contract
-
-A task must be representable independently from any model/provider.
-
-Required conceptual fields:
+## 2. Canonical Object Hierarchy
 
 ```text
-task_id
-objective
-input_refs
-quality_requirement
-budget
-risk_level
-privacy_level
-verification_level
-timeout
-metadata
+Principal / Organization
+  -> Portfolio
+      -> Workload[*]
+          -> PolicyDecision
+          -> CapitalAllocation
+          -> ExecutionPlan
+          -> Run[*]
+              -> TelemetryRecord[*]
+              -> FailureRecord[*]
+              -> RecoveryEpisode[*]
+              -> EvidenceRecord[*]
+              -> QualityEvaluation[*]
+              -> OutcomeRecord[*]
+  -> BudgetLedger[*]
+  -> ResourceState[*]
+  -> Learning / Reallocation Decision[*]
 ```
 
-### 3.2 Policy Engine
+**Execution remains the atomic economic object.** Portfolio and CapitalAllocation provide the higher-level coordination layer.
 
-Inputs:
+---
+
+## 3. Eight Core Planes
+
+### 3.1 Workload & Portfolio Plane
+
+Responsibilities:
+
+- accept canonical workload objectives rather than provider-specific prompts;
+- group workloads into portfolios;
+- record expected value, uncertainty, priority, deadlines and dependencies;
+- define quality, privacy, risk and irreversibility requirements;
+- expose defer / cancel / do-not-execute as valid decisions;
+- preserve principal / tenant / project ownership boundaries.
+
+A workload expresses **what outcome is wanted**, not how to implement it.
+
+### 3.2 Authority & Policy Plane
+
+This plane is authoritative for what may happen.
+
+Inputs may include:
 
 ```text
-Task + Tenant Policy + Runtime State
+Principal / Tenant Policy
+Workload Constraints
+Identity / Authority Context
+Data Classification
+Runtime / Resource State
+Budget State
+Risk / Irreversibility State
+Human Approval State
 ```
 
 Outputs:
 
 ```text
-Allowed Execution Space + Hard Constraints + Approval Requirements
-```
-
-Policy evaluation occurs before routing and is recorded in evidence.
-
-### 3.3 Economics Engine
-
-Inputs:
-
-```text
-Task
 Allowed Execution Space
-Historical Telemetry
-Runtime Prices/Capabilities
+Hard Constraints
+Required Controls
+Approval Requirements
+Budget Envelopes
+Reason Codes
 ```
 
-Output:
+Hard constraints dominate optimization preferences. Router / allocator / recovery logic may never widen authority.
+
+### 3.3 Resource Intelligence Plane
+
+Rasputin treats every usable production factor as a resource, including:
 
 ```text
-ExecutionPlan
+Model
+Agent / A2A Agent
+Harness / Runtime
+MCP Tool
+Retriever / Memory
+Verifier
+Human Reviewer
+GPU / Compute Runtime
+API Quota
+Sandbox
+Attested Environment
+External Router / Gateway
 ```
 
-An ExecutionPlan can specify model, harness, tools, memory strategy, compute target and verification level.
-
-### 3.4 Execution Plane
-
-Responsible only for carrying out an accepted ExecutionPlan and emitting events.
-
-Initial implementation should prefer a small deterministic interface over a broad Agent framework abstraction.
-
-### 3.5 Telemetry Plane
-
-Minimum measurements:
+Each resource may expose:
 
 ```text
-tokens_in
-tokens_out
-estimated_cost
-latency_ms
-status
-error_type
-quality_signals
-cache_hit
-retry_count
+identity
+capabilities
+nominal price
+shadow price
+availability
+quota
+latency
+reliability
+health
+task affinity
+historical outcome
+privacy class
+risk class
+verification support
+attestation state
 ```
 
-Telemetry must be machine-readable and joinable by task_id/run_id.
+The Resource Intelligence Plane is broader than a model registry.
 
-### 3.6 Evidence Plane
+### 3.4 Computational Capital Allocator
 
-Evidence is not equivalent to raw logs.
+This is the primary v7 differentiator.
 
-Evidence records the claims needed to reconstruct and verify an execution:
+It determines:
+
+1. which workloads deserve capital now;
+2. how much capital each receives;
+3. which resources / strategy classes are admissible;
+4. when further information gathering is worth its cost;
+5. when capital should be reserved for higher-value future work;
+6. when a workload should not execute.
+
+Algorithm ladder:
 
 ```text
-run identity
-policy identity/version
-execution-plan identity
-input/output commitments
-runtime/tool/model identities
-timestamps
-telemetry commitment
-parent evidence
+v0 deterministic allocation / explicit scoring
+ -> Lagrangian and shadow-price allocation
+ -> contextual bandits / constrained bandits
+ -> bandits-with-knapsacks style budgeted learning
+ -> offline policy evaluation / policy learning
+ -> constrained sequential control / robust optimization
 ```
 
-P0 target:
+No learned allocator ships without deterministic baseline, offline evaluation, rollback and policy-safe bounds.
+
+### 3.5 Execution Strategy Compiler
+
+Converts a CapitalAllocation into a concrete ExecutionPlan.
+
+Candidate dimensions:
 
 ```text
-Canonical serialization -> hash -> chained record -> Merkle batch
+model/provider
+external router vs direct provider vs local
+agent topology
+harness
+MCP/A2A resources
+tool set
+memory / retrieval strategy
+reasoning effort / sampling / search depth
+verification intensity
+runtime / sandbox
+recovery policy
 ```
 
-External anchoring is deliberately excluded from P0.
+Multi-Agent is an execution strategy, not the product identity.
 
-### 3.7 Optimization Loop
+### 3.6 Sovereign Execution Control Plane
 
-P0 optimization is experiment-driven rather than autonomous mutation.
-
-The system should be able to compare two or more execution strategies against the same workload and produce reproducible economics/quality results.
-
-Autonomous harness modification is deferred until evaluation and rollback contracts exist.
-
-## 4. Canonical Execution Flow
+Owns runtime lifecycle:
 
 ```text
-Task Submitted
-    |
-    v
-Task Validation
-    |
-    v
-Policy Evaluation
-    |
-    v
-Candidate Strategies
-    |
-    v
-Economics Evaluation
-    |
-    v
-ExecutionPlan Selected
-    |
-    v
-Execution
-    |
-    +----> Telemetry
-    |
-    +----> Evidence
-    |
-    v
-Quality Evaluation
-    |
-    v
-Run Finalization
-    |
-    v
-Experiment / Optimization Dataset
+prepare
+ -> authorize
+ -> reserve capital
+ -> execute
+ -> observe
+ -> limit / suspend / revoke
+ -> recover / reroute / abort
+ -> verify
+ -> finalize
+ -> settle ledgers
 ```
 
-## 5. Trust Model
+Required properties:
 
-P0 trust assumptions:
+- cancellation and termination;
+- timeout / retry / recovery ceilings;
+- capability and tool enforcement;
+- idempotency where applicable;
+- circuit breakers;
+- resource quarantine;
+- sandbox / egress boundaries;
+- parent/child run lineage;
+- policy-safe fallback;
+- runtime event emission.
 
-- local Rasputin runtime is trusted enough to create provenance records;
-- cryptographic commitments detect post-hoc mutation but do not by themselves prove trusted hardware execution;
-- external runtime attestation is an adapter-level future capability;
-- public blockchain anchoring strengthens timestamp/existence claims but does not prove semantic correctness;
-- zero-knowledge proofs will target policy/compliance statements, not hidden chain-of-thought.
+### 3.7 Outcome, Telemetry, Evidence & Failure Intelligence Plane
 
-## 6. Data Strategy
+Rasputin must separate four classes of truth:
 
-Rasputin must retain structured execution telemetry suitable for both engineering optimization and research.
+**Telemetry** — what the runtime measured.  
+**Evidence** — what claims can be reconstructed and integrity-checked.  
+**Outcome** — what happened downstream.  
+**Failure Intelligence** — what failed, why, under which resource state, and what recovery worked.
 
-Core analytical record:
+Canonical analytical record:
 
 ```text
-(Task, Strategy, Model, Harness, Tools, Cost,
- Latency, Quality, Failure, Verification, Policy)
+(Workload,
+ Context,
+ ResourceState,
+ Strategy,
+ NominalCost,
+ ShadowCost,
+ RiskConsumed,
+ IrreversibilityConsumed,
+ Attack,
+ Failure,
+ Recovery,
+ Quality,
+ Outcome,
+ EconomicValue,
+ Evidence)
 ```
 
-Sensitive payloads should be referenced or committed by hash where possible rather than duplicated into analytics tables.
+Raw tracing should prefer OpenTelemetry-compatible semantics where practical. Rasputin adds the economic and authority layer rather than reinventing span transport.
 
-## 7. Testbeds
+### 3.8 Learning & Reallocation Engine
 
-### FlowTracer
-
-Primary recurring-workload testbed for routing, caching, quality/cost and monitoring workloads.
-
-### Möbius
-
-Primary harness/workflow testbed for orchestration, review gates, evidence and development-loop optimization.
-
-Vertical terminals remain consumers of the kernel.
-
-## 8. P0 Non-Goals
-
-Do not block Rasputin Core on:
-
-- polished UI
-- full multi-agent visualization
-- public-chain deployment
-- smart contracts
-- zk circuits
-- A2A protocol invention
-- multimodal chart extraction
-- complete Obsidian executable environment
-- enterprise multi-tenancy
-
-## 9. Architecture Gates
-
-Implementation cannot advance simply because code exists.
-
-Each phase must produce evidence:
+Learning pipeline:
 
 ```text
-CODE + TEST + BUILD + PERFORMANCE + SECURITY + DECISION
+Outcome
+ -> delayed reward / credit assignment
+ -> failure & recovery attribution
+ -> counterfactual / offline evaluation
+ -> candidate policy or pricing update
+ -> shadow / safe deployment
+ -> online exploration within bounds
+ -> capital reallocation
 ```
 
-A phase closes only when its acceptance gate is satisfied and the Controller records the decision.
+A model-generated self-reflection message is never sufficient evidence for changing production allocation policy.
 
-## 10. Version Boundary
+---
 
-v5.0 is retained as the historical full-domain vision.
+## 4. Cross-Cutting Loop A — Red-Blue Adversarial Assurance
 
-v6.0-alpha is the executable architecture that narrows the first implementation around:
+Red-Blue is a permanent assurance loop across all planes.
+
+### Red targets
 
 ```text
-Execution Schema
-Policy
-Economics
-Routing
-Telemetry
-Evidence
-Optimization
+value manipulation
+urgency manipulation
+scarcity / price manipulation
+allocator gaming
+policy bypass
+prompt / tool injection
+poisoned context or memory
+resource impersonation
+verifier manipulation
+telemetry falsification
+outcome falsification
+quota / latency shocks
+provider compromise / outage
+recovery abuse
+cross-agent authority confusion
 ```
 
-All later capabilities must attach to these contracts rather than bypass them.
+### Blue controls
+
+```text
+policy tightening
+privilege reduction
+resource quarantine
+sandbox / egress escalation
+secondary verification
+human approval
+memory rollback
+resource substitution
+budget reduction
+rate limiting
+execution cancellation
+credential / authority revocation
+```
+
+### Assurance invariant
+
+The target is not merely model safety; it is **Computational Capital Integrity**: an adversary must not be able to obtain disproportionate capital, authority or irreversible effect by manipulating value, state or evidence signals.
+
+Red-team intensity itself consumes capital and must be policy- and value-aware.
+
+---
+
+## 5. Cross-Cutting Loop B — Adaptive Recovery & Self-Healing
+
+Permanent recovery protocol:
+
+```text
+DETECT
+ -> DIAGNOSE
+ -> CONTAIN
+ -> RECOVER
+ -> VERIFY
+ -> REALLOCATE
+ -> LEARN
+```
+
+Failure classes include:
+
+- provider / model degradation;
+- tool or runtime failure;
+- policy violation;
+- verifier disagreement;
+- poisoned or corrupted context / memory;
+- quota exhaustion;
+- latency degradation;
+- security incident;
+- quality failure;
+- business-outcome failure.
+
+Possible recovery actions:
+
+```text
+retry
+reroute
+alternate model/tool/harness
+rollback
+restore memory
+reduce privileges
+degrade gracefully
+escalate verification
+human escalation
+quarantine
+abort
+```
+
+Recovery is budgeted. Conceptual stop rule:
+
+```text
+if Expected Remaining Outcome Value < Expected Recovery Cost:
+    abort / defer / escalate
+```
+
+Provider-wide failures must be able to trigger **portfolio-level reallocation**, not merely per-request fallback.
+
+---
+
+## 6. Capital Ledger and Shadow Pricing
+
+Rasputin distinguishes nominal price from effective computational cost.
+
+Conceptually:
+
+```text
+EffectiveCost =
+    Money
+  + QuotaScarcity
+  + LatencyScarcity
+  + RiskCost
+  + VerificationCost
+  + HumanAttentionCost
+  + OpportunityCost
+  + RecoveryReserveCost
+```
+
+Budget dimensions may include:
+
+```text
+money
+compute
+tokens / quota
+latency
+verification
+human attention
+risk
+irreversibility
+recovery
+```
+
+Budget ledgers may exist at principal, tenant, portfolio, workload, execution or resource scope.
+
+---
+
+## 7. Outcome Intelligence
+
+Quality score is not the final optimization target.
+
+Rasputin models:
+
+```text
+Execution Output
+ -> Technical Success
+ -> Task Success
+ -> Workflow Outcome
+ -> Business / Research Outcome
+ -> Economic / Strategic Value
+```
+
+A future core metric is:
+
+```text
+ROCC = Risk-Adjusted Outcome Value / Effective Computational Capital
+```
+
+The system must preserve delayed outcomes and allow later outcome records to attach to finalized runs and portfolios.
+
+---
+
+## 8. Verification, Evidence and Trust
+
+Verification is itself an allocatable resource:
+
+```text
+deterministic checks
+schema validation
+reference / domain rules
+model judge / cross-model judge
+human review
+runtime attestation
+cryptographic proof
+business outcome
+```
+
+Evidence path:
+
+```text
+Canonical Record
+ -> Content Commitment
+ -> Hash Chain
+ -> Merkle Batch
+ -> Optional Signature / Transparency Layer
+ -> Optional Runtime / Hardware Attestation
+ -> Optional External Anchor
+ -> Future Zero-Knowledge Compliance
+```
+
+Rasputin does not claim to prove hidden chain-of-thought. ZK work is limited to compliance predicates over stable execution commitments.
+
+---
+
+## 9. Standards and Adapter Boundary
+
+Permanent law:
+
+```text
+Frontier Theory -> Core
+Frontier Technology -> Adapter / Standard by default
+```
+
+Rasputin may integrate:
+
+- MCP for tools/data;
+- A2A for agent interoperability;
+- OpenTelemetry for raw traces/metrics;
+- OPA/Rego or Cedar-compatible policy backends;
+- SPIFFE/SPIRE-style workload identity;
+- OpenRouter, LiteLLM, direct provider APIs and local runtimes as execution venues;
+- LangGraph or other orchestration runtimes;
+- context/provenance systems such as Semantica as adapters;
+- Sigstore/in-toto/transparency/TEE/attestation systems as trust adapters.
+
+None of these external systems define Rasputin's moat.
+
+---
+
+## 10. Security Invariants
+
+1. No component may widen a PolicyDecision.
+2. Every material capital allocation is attributable to policy, resource state and allocator version.
+3. Denied workloads never reach runtime.
+4. Recovery actions remain inside the same or stricter authority envelope unless a new explicit approval is produced.
+5. Risk, irreversibility and recovery budgets fail closed when exhausted.
+6. Resource state changes can invalidate queued plans.
+7. Sensitive payloads are referenced / committed where possible rather than copied into evidence.
+8. Evidence must distinguish declared plan from observed execution.
+9. No automatic policy update bypasses offline evaluation, rollback or Controller gate.
+10. Red-team tooling never gains broader production authority merely because it is a testing component.
+11. Unknown schema / policy major versions fail explicitly.
+12. Human approval is a first-class artifact, not an informal message.
+
+---
+
+## 11. Repository Target
+
+```text
+rasputin/
+  core/
+    contracts/
+    portfolio/
+    authority/
+    resources/
+    capital/
+    strategy/
+    runtime/
+    telemetry/
+    outcome/
+    failure/
+    recovery/
+    evidence/
+    evaluation/
+    learning/
+    assurance/
+  adapters/
+    models/
+    routing_venues/
+    mcp/
+    a2a/
+    policy/
+    identity/
+    storage/
+    observability/
+    attestation/
+    anchoring/
+  benchmarks/
+    capital/
+    adversarial/
+    resilience/
+  api/
+  cli/
+  frontend/
+  tests/
+    unit/
+    contract/
+    integration/
+    e2e/
+    performance/
+    security/
+    chaos/
+  fixtures/
+  docs/
+  scripts/
+  infra/
+```
+
+---
+
+## 12. Benchmarks
+
+### RCB — Rasputin Capital Benchmark
+
+Measures success, verified success, effective cost, latency/SLA, policy violations, risk/irreversibility consumption, human intervention, portfolio utility, Utility/$, Utility/token, Utility/compute and ROCC.
+
+### RARB — Rasputin Adversarial & Resilience Benchmark
+
+Measures attack detection, bypass rate, unauthorized action rate, MTTD, MTTR, recovery success, recovery cost, blast radius, portfolio utility under attack/failure, quarantine success, rollback integrity and capital reallocation efficiency.
+
+Optimization claims without benchmark evidence are not release claims.
+
+---
+
+## 13. Version Boundary
+
+- **v5.0** — historical full-domain vision; frozen.
+- **v6.0-alpha** — execution-economics migration baseline; preserved for migration history.
+- **v7.0** — active strategic and technical target.
+
+Current implementation priority is **R0 contract migration and architecture acceptance**. Existing v6 concepts that remain valid should be migrated, not blindly discarded.

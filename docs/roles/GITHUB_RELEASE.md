@@ -1,39 +1,49 @@
-# GitHub & Release Role — Rasputin
+# GitHub & Release Role — Rasputin v7
 
 ## Mission
-Turn only Integration-accepted code into a clean, reproducible and documented repository/release state.
+
+Turn only Controller-accepted, integration-accepted states into a clean, reproducible and documented repository/release baseline.
 
 ## Entry condition
-`GATE-INT-*` must be ACCEPTED.
+
+The active release gate must be accepted. Architecture-only migrations may merge after their dedicated architecture gate when they intentionally contain no production implementation.
 
 ## Owns
-- branch/PR hygiene
-- final diff audit
-- required checks/CI verification
-- documentation synchronization
-- changelog/release notes
-- version/tag preparation
-- main synchronization
-- release artifact bookkeeping
+
+- branch / PR hygiene;
+- final diff audit;
+- CI / required-check verification;
+- documentation synchronization;
+- architecture / contract migration notes;
+- benchmark / assurance evidence references where applicable;
+- changelog / release notes;
+- version / tag preparation;
+- main synchronization;
+- release artifact bookkeeping.
 
 ## Must not
-- merge known P0 defects
-- redesign application behavior
-- bypass failed integration evidence
-- hide test failures
-- publish secrets/generated junk
 
-## Final release checklist
+- merge known gate-blocking defects;
+- redesign architecture or application behavior;
+- bypass failed integration / assurance evidence;
+- hide test, recovery or red-blue failures;
+- publish secrets or generated junk;
+- label unvalidated ROCC / safety / resilience claims as proven results.
+
+## Final Release Checklist
+
 ```text
-Integration ACCEPT exists
-Expected commits only
-Tests/checks green
+Active gate ACCEPT exists
+Expected commits/files only
+Tests/checks appropriate to stage are green
 No secrets
-Docs match code
+Docs match implementation / architecture
+Migration notes correct
+RCB/RARB evidence attached when required
 Known limitations recorded
 Version/changelog correct
-Main synchronized
+Main synchronization plan valid
 Release decision recorded
 ```
 
-GitHub is the last stage, not a parallel implementation lane.
+GitHub/Release is the last stage of an implementation release and the final archival stage of an architecture migration.

@@ -1,62 +1,66 @@
-# Rasputin CORE-0 — Execution Evidence Contract
+# Rasputin v7 — Evidence & Assurance Contract
 
-> Status: PRE-DEVELOPMENT / DRAFT FOR GATE-CORE-0  
-> Contract ID: CORE-0-CONTRACT-EVIDENCE  
-> Version: 0.1.0-alpha
+> **Status:** R0 MIGRATION DRAFT  
+> **Contract ID:** V7-CONTRACT-EVIDENCE  
+> **Version:** 1.0.0-alpha
 
 ## 1. Purpose
 
-The Evidence Contract defines the minimum cryptographic and semantic record required to make an Agent execution reconstructable, tamper-evident and suitable for later attestation, anchoring and zero-knowledge compliance proofs.
+Defines the minimum semantic and cryptographic record required to make a Rasputin allocation/execution/recovery/assurance history reconstructable, tamper-evident and extensible to signatures, transparency, attestation and future Zero-Knowledge Compliance.
 
 Evidence is not equivalent to logging.
 
-Logs answer:
+```text
+Telemetry: what was measured?
+Evidence: what claims are bound together and integrity-checkable?
+Outcome: what happened downstream?
+Assurance: what adversarial / recovery condition was tested and with what result?
+```
 
-> What did the runtime report?
+## 2. Trust Boundary
 
-Evidence aims to answer:
+Initial v7 evidence provides tamper-evident provenance under a trusted-enough local control-plane assumption.
 
-> What execution claims are bound together, which artifacts support those claims, and can silent post-hoc mutation be detected?
-
-## 2. P0 Trust Boundary
-
-P0 provides tamper-evident provenance under a local-runtime trust assumption.
-
-P0 DOES NOT claim:
+It does NOT by itself prove:
 
 - trusted hardware execution;
-- remote attestation;
-- semantic correctness of model output;
-- proof of hidden chain-of-thought;
+- provider honesty;
+- semantic truth of model output;
+- hidden chain-of-thought;
 - public-chain finality;
-- zero-knowledge policy proof.
+- ZK policy proof.
 
-These are future layers that attach to the same evidence model.
+Those capabilities attach through stronger adapters and explicit verification levels.
 
-## 3. Evidence Object
-
-Minimum conceptual schema:
+## 3. EvidenceRecord
 
 ```yaml
-schema_version: "0.1.0"
+schema_version: "1.0.0"
 evidence_id: "ev_..."
-run_id: "run_..."
-task_id: "task_..."
 created_at: "..."
-evidence_type: "run_start|policy|plan|model_call|tool_call|runtime|quality|run_final"
+evidence_type: "portfolio|policy|authority|allocation|plan|run_start|model_call|tool_call|runtime|ledger|failure|recovery|quality|outcome|assurance|run_final|portfolio_reallocation"
+portfolio_id: null
+workload_id: null
+run_id: null
 claims:
   policy_decision_id: null
-  policy_hash: null
+  authority_envelope_id: null
+  allocation_id: null
   execution_plan_id: null
-  plan_hash: null
-  model_ref: null
-  harness_ref: null
-  tool_refs: []
-  runtime_ref: null
+  resource_state_refs: []
+  failure_id: null
+  recovery_id: null
+  outcome_id: null
+  assurance_result_id: null
 commitments:
   input_hashes: []
   output_hashes: []
+  policy_hash: null
+  authority_hash: null
+  allocation_hash: null
+  plan_hash: null
   telemetry_hash: null
+  ledger_hash: null
   result_hash: null
 lineage:
   previous_evidence_hash: null
@@ -70,190 +74,235 @@ evidence_hash: "sha256:..."
 
 ## 4. Canonical Serialization
 
-Hashing MUST operate on deterministic canonical bytes.
+Hashing requires deterministic bytes:
 
-P0 requirements:
-
-1. stable field ordering;
+1. stable canonical field ordering;
 2. normalized UTF-8;
-3. normalized timestamp representation;
-4. explicit null handling;
-5. deterministic number representation;
-6. `evidence_hash` excluded from the payload being hashed.
-
-Implementation may use canonical JSON or another deterministic format, but the format MUST be documented and covered by golden-vector tests.
+3. normalized RFC3339 timestamps;
+4. explicit null semantics;
+5. deterministic numeric representation;
+6. `evidence_hash` excluded from its own digest;
+7. golden vectors for each major contract version.
 
 ## 5. Hash Chain
 
-Each evidence record binds the prior accepted record for a run or evidence stream.
-
 ```text
-H_0 = SHA256(E_0)
+H_0 = SHA256(canonical(E_0))
 H_n = SHA256(canonical(E_n with previous_evidence_hash = H_(n-1)))
 ```
 
-Mutation, deletion or reordering SHOULD be detectable when the verifier has the expected chain head or a trusted anchor.
+Deletion, reordering or mutation should be detectable against a known chain head / anchor.
 
 ## 6. Merkle Aggregation
 
-Finalized evidence records MAY be batched into a Merkle tree.
-
-P0 MUST define:
-
-- deterministic leaf construction;
-- deterministic leaf ordering;
-- tree construction rule;
-- odd-leaf rule;
-- root encoding;
-- inclusion proof format;
-- verification function.
-
-Conceptual batch object:
+Finalized evidence MAY be batched.
 
 ```yaml
+schema_version: "1.0.0"
 batch_id: "batch_..."
 created_at: "..."
 leaf_count: 0
 leaf_hashes: []
 merkle_root: "sha256:..."
 algorithm: "sha256-binary-v1"
+signature_refs: []
+attestation_refs: []
 external_anchor: null
 ```
+
+Leaf ordering, odd-leaf behavior, proof format and verification function must be deterministic.
 
 ## 7. Evidence Lifecycle
 
 ```text
-Task accepted
-  -> policy evidence
-  -> plan evidence
-  -> execution event evidence
-  -> telemetry commitment
-  -> quality commitment
-  -> final result commitment
-  -> final run evidence
-  -> optional Merkle batch
+Portfolio admitted
+ -> Workload / policy / authority evidence
+ -> Capital allocation evidence
+ -> Execution plan evidence
+ -> Run / tool / model / runtime evidence
+ -> Ledger commitments
+ -> Failure / recovery evidence when applicable
+ -> Quality evidence
+ -> Outcome evidence (possibly delayed)
+ -> Final run evidence
+ -> Portfolio reallocation evidence when applicable
+ -> Optional Merkle / signature / attestation / external anchor
 ```
 
-The exact number of intermediate evidence records may vary by execution mode, but final evidence MUST bind the policy, plan, result and relevant telemetry commitments.
+## 8. Capital Evidence
 
-## 8. Data Minimization
-
-Evidence SHOULD contain commitments and references rather than sensitive raw payloads.
-
-Preferred pattern:
+Every material CapitalAllocation should be able to bind:
 
 ```text
-Sensitive Input
-   |
-   +--> secure/local storage reference
-   |
-   +--> SHA-256 commitment included in evidence
+allocator identity/version
+workload / portfolio
+resource-state snapshot refs
+policy / authority refs
+budget refs
+expected value
+expected effective cost
+selection / deferral reason codes
+allocation hash
 ```
 
-Rasputin must not turn its audit subsystem into an uncontrolled secondary copy of confidential data.
+This allows later reconstruction of **why intelligence was or was not funded**.
 
-## 9. Evidence Claims vs Proof Strength
+## 9. Recovery Evidence
 
-Verification levels are intentionally explicit.
+Recovery evidence binds:
 
-### none
-No cryptographic evidence requirement.
+```text
+failure
+failure severity / suspected cause
+containment action
+recovery strategy
+recovery budget consumed
+new plan / reroute if any
+verification result
+final recovery outcome
+portfolio reallocation if triggered
+```
 
-### basic
-Canonical local hashes and execution provenance.
+Recovery evidence MUST distinguish:
 
-### enhanced
-Hash chain + policy/plan binding + Merkle aggregation or equivalent stronger local controls.
+- original declared plan;
+- observed failure;
+- containment action;
+- modified execution path.
 
-### attested
-Future: evidence additionally bound to external runtime/hardware identity or attestation.
+## 10. Red-Blue / Assurance Evidence
 
-### zk
-Future: selected policy/compliance predicates proven without revealing protected underlying data.
+Assurance runs are first-class evidence.
 
-A UI or report MUST NOT describe `basic` evidence as remote attestation or zero-knowledge proof.
-
-## 10. External Anchoring Interface
-
-Public-chain or private-network anchoring is optional and downstream.
-
-Future anchor record:
+Conceptual object:
 
 ```yaml
-anchor_id: "anchor_..."
-batch_id: "batch_..."
-merkle_root: "sha256:..."
-anchor_type: "l2|private_ledger|timestamp_service|other"
-network_ref: "..."
-transaction_ref: "..."
-anchored_at: "..."
+schema_version: "1.0.0"
+assurance_result_id: "assure_..."
+scenario_id: "scenario_..."
+created_at: "..."
+mode: "shadow|controlled_chaos|staging|authorized_production"
+targets: []
+attack_class: null
+expected_controls: []
+observed_controls: []
+bypass_detected: false
+unauthorized_effect: false
+blast_radius_refs: []
+recovery_refs: []
+metrics: {}
+evidence_refs: []
+extensions: {}
 ```
 
-Anchoring proves existence/commitment relationships under the backend's trust model. It does not establish the semantic truth of Agent output.
+Red-team tooling MUST have its own bounded test authority and evidence must prove which environment and permissions were used.
 
-## 11. Future Attestation Adapter
+## 11. Outcome Evidence
 
-The evidence model reserves space for runtime identity and attestation artifacts.
+Outcome may be delayed and external to the runtime. Evidence should record source and attribution strength rather than pretending all value is directly caused by one execution.
+
+```text
+OutcomeRecord
+ -> source refs / business event refs
+ -> attribution confidence
+ -> realized value
+ -> risk adjustment
+ -> execution / workload lineage
+```
+
+## 12. Data Minimization
+
+Evidence should prefer commitments/references over sensitive plaintext.
+
+```text
+Sensitive Payload
+  -> secure/local reference
+  -> stable commitment
+  -> evidence includes reference + commitment
+```
+
+The evidence plane must not become an uncontrolled confidential-data replica.
+
+## 13. Verification Levels
+
+### none
+No cryptographic integrity requirement.
+
+### basic
+Canonical hashes and execution provenance.
+
+### enhanced
+Hash chain + policy/authority/allocation/plan binding + Merkle or equivalent stronger controls.
+
+### attested
+Evidence additionally bound to external workload/runtime/hardware identity or attestation.
+
+### zk
+Future compliance proof over selected predicates without revealing protected data.
+
+Reports must never overstate proof strength.
+
+## 14. Future Trust Adapters
 
 Future adapters may bind:
 
+- workload identity;
 - runtime image digest;
-- hardware/TEE identity;
-- software measurement;
-- policy engine version;
-- tool adapter digest;
-- model/provider identity where verifiable.
+- tool/harness digest;
+- TEE / confidential-compute attestation;
+- provider identity where verifiable;
+- transparency-log inclusion;
+- supply-chain provenance;
+- external timestamp / ledger anchor.
 
-Attestation MUST extend the evidence plane rather than require a parallel audit system.
+These extend the evidence plane rather than create parallel audit systems.
 
-## 12. Future Zero-Knowledge Compliance
+## 15. Zero-Knowledge Compliance
 
-Rasputin's zk target is a verifiable compliance statement, not proof of hidden model reasoning.
-
-Examples:
+Future ZK scope is limited to predicates such as:
 
 ```text
-"Execution used only approved resources."
-"Private risk metric was below threshold T."
-"Required policy P was satisfied."
-"A computation over confidential data produced a result satisfying predicate R."
+approved resource set was respected
+cost <= authorized budget
+risk / irreversibility metric <= threshold
+required policy version was enforced
+required attestation was present
+private compliance condition evaluated true
 ```
 
-The P0 evidence schema must preserve stable commitments that future circuits or proof systems can reference.
+Rasputin does not attempt to prove hidden model reasoning.
 
-## 13. Security Invariants
+## 16. Security Invariants
 
 1. Finalized evidence is append-only.
-2. `run_final` evidence MUST bind the effective policy and execution plan.
-3. Evidence MUST distinguish declared plan from observed execution where possible.
-4. Missing required evidence causes verification failure, not silent downgrade.
+2. `run_final` binds effective policy, authority, allocation and execution plan.
+3. Evidence distinguishes declared plan from observed execution.
+4. Missing required evidence causes verification failure, never silent downgrade.
 5. Unknown verification mechanisms fail explicitly.
-6. Sensitive plaintext is not required for integrity verification when a stable commitment/reference suffices.
-7. External anchoring is never treated as proof of correctness.
-8. Evidence verification MUST be possible without invoking an LLM.
+6. Sensitive plaintext is not required when a stable commitment suffices.
+7. External anchoring is not semantic correctness.
+8. Deterministic integrity verification must not require an LLM.
+9. Recovery cannot rewrite failure history.
+10. Assurance results cannot be marked successful if an unauthorized irreversible effect occurred.
+11. Delayed outcome records append; they do not mutate finalized run evidence.
 
-## 14. P0 Required Verification Tests
+## 17. Required Tests
 
-`GATE-CORE-5` will require:
+At minimum:
 
-- same canonical object produces same hash;
+- deterministic hash golden vectors;
 - one-byte material mutation changes hash;
-- changed field ordering before canonicalization does not change hash;
-- broken previous hash is detected;
-- removed/reordered record is detected against known chain head;
-- Merkle inclusion proof verifies;
-- modified Merkle leaf fails verification;
-- final evidence references policy and plan hashes;
+- canonical field reordering is stable;
+- broken chain detected;
+- removed/reordered evidence detected against known head;
+- Merkle proof success/failure vectors;
+- final evidence binds policy/authority/allocation/plan;
+- recovery evidence preserves original failure and modified plan lineage;
+- assurance evidence records mode and bounded authority;
 - verifier runs deterministically without model calls.
 
-## 15. Core Principle
+## 18. Core Principle
 
-Rasputin should be able to say precisely:
+Rasputin must always distinguish:
 
-> This is what we can prove cryptographically.
-
-and separately:
-
-> This is what we merely observed or inferred.
-
-That separation is mandatory for every later trust claim.
+> **what was observed, what was inferred, what was authorized, and what can actually be proven.**

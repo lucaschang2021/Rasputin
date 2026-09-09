@@ -1,258 +1,186 @@
-# Rasputin — Pre-Development Control Plan
+# Rasputin v7 — Pre-Development Control Plan
 
-> Mode: Möbius-style controller-first pre-development  
-> Rule: no uncontrolled implementation before contracts and gates are accepted.
+> **Mode:** controller-first strategic migration  
+> **Status:** COMPLETE / `GATE-V7-R0` ACCEPTED  
+> **Next stage:** R1 Executable Canonical Contracts
 
 ## 1. Operating Model
 
 ```text
-Discover -> Read -> Dispatch -> Execute -> Observe -> Accept -> Decide -> Archive
+Discover
+ -> Read v5/v6 baseline
+ -> Migrate architecture
+ -> Freeze contracts
+ -> Controller review
+ -> GATE-V7-R0 ACCEPT
+ -> Dispatch R1
 ```
 
-Roles are separated conceptually even if one developer/agent performs several roles.
+The strategic migration is complete. Implementation now follows `docs/10-BACKEND-WORK-PACKAGE.md`.
 
-- **Controller** — owns scope, phase state, dispatch and final acceptance.
-- **Backend** — implements kernel contracts and runtime components.
-- **Frontend** — begins only when a stable user-facing contract exists.
-- **Integration** — verifies cross-component behavior and repairs integration failures.
-- **GitHub/Release** — maintains branch/PR/release/documentation hygiene.
+## 2. R0 Migration Results
 
-Default engineering order:
+### V7-R0-A — Strategic Constitution
+
+Accepted:
+
+- Sovereign Computational Capital Control Plane definition;
+- v5/v6/v7 version boundary;
+- moat vs adapter boundary;
+- portfolio-first / authority-first principles;
+- Red-Blue and Adaptive Recovery as permanent loops.
+
+### V7-R0-B — Economic / Resource Model
+
+Accepted semantics:
 
 ```text
-Controller -> Backend -> Frontend -> Integration/Test -> GitHub/Release
+Workload Portfolio
+Computational Capital
+Resource / ResourceState
+Nominal Cost
+Shadow Cost
+Opportunity Cost
+BudgetEnvelope / BudgetLedger
+DO_NOT_EXECUTE / DEFER / WAIT_FOR_INFORMATION
 ```
 
-## 2. Task Identity
+### V7-R0-C — Authority / Risk Model
 
-Every implementation task receives a stable ID.
-
-Examples:
+Accepted semantics:
 
 ```text
-CORE-1-T1
-CORE-1-T2
-CORE-2-T1
-POLICY-1-T1
-EVID-1-T1
+Principal / Tenant / Workload authority
+Money / Compute / Quota / Latency budgets
+Verification / Human Attention budgets
+Risk Budget
+Irreversibility Budget
+Recovery Budget
+HITL / approval artifacts
+Runtime enforcement invariants
 ```
 
-Every task must state:
+### V7-R0-D — Resilience / Adversarial Model
+
+Accepted:
 
 ```text
-ID
-Objective
-Inputs
-Allowed scope
-Forbidden scope
-Deliverables
-Tests
-Acceptance evidence
-Dependencies
-Rollback note
-Status
+Failure taxonomy
+DETECT -> DIAGNOSE -> CONTAIN -> RECOVER -> VERIFY -> REALLOCATE -> LEARN
+Red attack classes
+Blue response classes
+Shadow Mode
+Controlled Chaos
+RCB / RARB benchmark semantics
 ```
 
-## 3. Evidence Standard
+### V7-R0-E — Contract Migration
 
-A task is not complete because an Agent says it is complete.
+Accepted contract families:
 
-Acceptance may require:
+```text
+Portfolio / Workload
+Resource / ResourceState
+BudgetEnvelope / BudgetLedger
+PolicyDecision / AuthorityEnvelope
+CapitalAllocation
+ExecutionPlan / Run
+TelemetryRecord
+EvidenceRecord
+FailureRecord
+RecoveryEpisode
+QualityEvaluation
+OutcomeRecord
+RedBlueScenario / AssuranceResult
+```
 
-- code diff
-- unit/integration tests
-- build output
-- benchmark/performance output
-- security/static checks where relevant
-- schema/example artifacts
-- Controller decision
+## 3. Gate Result
 
-Canonical principle:
+`GATE-V7-R0 = ACCEPTED` on 2026-09-09.
 
-> Agents execute. Git records. Evidence proves. The Controller governs.
+Controller review confirmed:
 
-## 4. P0 Phase Board
+- policy/allocation/strategy/execution/recovery/evidence/outcome separation;
+- v6→v7 migration mapping;
+- explicit budget enforcement semantics;
+- policy-safe recovery;
+- bounded Red-Team authority;
+- R1–R16 dependency order;
+- historical v6 gate clearly superseded for implementation authority.
 
-### CORE-0 — Architecture & Contracts
+## 4. Backlog Classification
 
-**Objective:** freeze P0 boundaries before kernel implementation.
+Every proposed capability remains classified as:
 
-Deliverables:
-
-- README positioning
-- architecture specification
-- pre-development control plan
-- execution schema specification
-- policy contract specification
-- evidence contract specification
-
-Gate: `GATE-CORE-0`
-
-Acceptance:
-
-- no unresolved contradiction between contracts
-- P0 non-goals explicitly recorded
-- every next phase has measurable output
-
-### CORE-1 — Execution Schema
-
-Objective: create provider-independent canonical task/run/execution-plan schemas.
-
-Gate requires:
-
-- schema validation tests
-- serialization stability tests
-- representative example fixtures
-- versioning rule
-
-### CORE-2 — Metering & Telemetry
-
-Objective: capture reproducible cost/latency/token/status telemetry.
-
-Gate requires:
-
-- deterministic normalized record
-- provider adapter tests
-- failure/retry representation
-- joinability by task/run IDs
-
-### CORE-3 — Gateway / Router
-
-Objective: select between at least two execution resources according to declared constraints.
-
-Gate requires:
-
-- routing decision record
-- fallback behavior
-- budget constraint test
-- reproducible comparison workload
-
-### CORE-4 — Policy Engine
-
-Objective: enforce execution constraints before dispatch.
-
-Gate requires:
-
-- allowed/denied model test
-- allowed/denied tool test
-- cost constraint test
-- privacy/verification policy representation
-- immutable policy version reference in evidence
-
-### CORE-5 — Evidence Chain
-
-Objective: produce tamper-evident local execution evidence.
-
-Gate requires:
-
-- canonical hashing
-- chain verification
-- mutation detection
-- Merkle batch generation/verification
-- evidence references to policy and execution plan
-
-### CORE-6 — Economics Evaluator
-
-Objective: compare strategies using total economic cost and quality signals.
-
-Gate requires:
-
-- common workload
-- >=2 strategies
-- normalized metrics
-- reproducible report
-
-### CORE-7 — Optimization Loop v0
-
-Objective: use historical telemetry to recommend or select an improved strategy under constraints.
-
-Gate requires:
-
-- baseline vs optimized strategy
-- no policy bypass
-- measurable result
-- rollback path
-
-## 5. Pre-Development Backlog Classification
-
-Every proposed capability is classified before implementation:
-
-- **BUILD NOW** — necessary for current phase gate.
-- **KEEP** — strategic capability with future phase.
-- **INTEGRATE** — use an external standard/component rather than rebuild.
-- **COMMODITIZED** — required infrastructure but not a moat.
-- **DEFER** — does not justify current complexity.
-- **RESEARCH** — requires technical/market validation before product commitment.
+- **CORE NOW** — necessary for current gate;
+- **CORE LATER** — strategic Rasputin logic with later stage;
+- **ADAPTER** — external technology integrated behind contract;
+- **COMMODITY** — required but not a moat;
+- **RESEARCH** — theory/market validation required;
+- **DEFER** — complexity not justified.
 
 Current examples:
 
 ```text
-Agent Economics Engine       BUILD NOW
-Policy Engine                BUILD NOW
-Execution Evidence           BUILD NOW
-Metering/Telemetry           BUILD NOW
-LiteLLM                      INTEGRATE
-MCP                          INTEGRATE
-LangGraph                    INTEGRATE / conditional
-Vector DB / generic RAG      COMMODITIZED
-Generic multi-agent UI       DEFER
-L2 anchoring                 DEFER
-A2A cross-domain layer       KEEP / RESEARCH
-Zero-Knowledge Compliance    KEEP / RESEARCH
-Obsidian executable mode     KEEP
-Vision-to-Data               DEFER
+Workload / Portfolio executable schemas  CORE NOW
+Capital / Budget schema + primitives     CORE NOW
+Resource Intelligence schemas           CORE NOW
+Authority schemas                        CORE NOW
+Failure / Recovery schemas              CORE NOW
+Red-Blue assurance schemas              CORE NOW
+OpenTelemetry                            ADAPTER
+MCP / A2A                               ADAPTER / standard
+OpenRouter / LiteLLM                    ADAPTER
+OPA/Rego / Cedar                        ADAPTER
+SPIFFE/SPIRE                            ADAPTER
+Semantica / provenance graph            ADAPTER
+Generic vector DB / RAG                 COMMODITY
+Generic multi-agent framework           ADAPTER
+Blockchain anchoring                    DEFER / ADAPTER
+TEE attestation                         CORE LATER / ADAPTER
+Zero-Knowledge Compliance               RESEARCH
+Agent markets / auctions                RESEARCH
 ```
+
+## 5. R1 Dispatch Queue
+
+```text
+R1-T1 Portfolio / Workload executable schemas
+R1-T2 Resource / ResourceState schemas
+R1-T3 BudgetEnvelope / BudgetLedger schemas
+R1-T4 AuthorityEnvelope / PolicyDecision migration
+R1-T5 CapitalAllocation / ExecutionPlan schemas
+R1-T6 Telemetry / Failure / Recovery / Outcome schemas
+R1-T7 Assurance schemas
+R1-T8 Evidence bindings
+R1-T9 Golden fixtures + v6 migration tests
+```
+
+Only after `GATE-R1` should R2 telemetry / capital-ledger implementation proceed.
 
 ## 6. Scope Firewall
 
-During P0:
+1. New ideas enter backlog by default.
+2. No feature may bypass the current gate.
+3. External standards are preferred when they satisfy Rasputin contracts.
+4. Optimization claims require benchmark evidence.
+5. Trust claims require explicit evidence strength.
+6. Recovery claims require failure injection evidence.
+7. Safety claims require adversarial test evidence.
+8. Multi-Agent complexity requires measured marginal utility.
+9. R16 research cannot become an R1-R15 dependency without Controller approval.
 
-1. new ideas enter backlog by default;
-2. no feature may bypass the Controller phase board;
-3. no P1/P2/P3 capability may become a dependency of a P0 gate without an explicit architecture decision;
-4. external standards are preferred over proprietary reinvention when they satisfy the contract;
-5. optimization claims require measurement;
-6. trust claims require evidence.
+## 7. Definition of Pre-Development Complete
 
-## 7. Branch / Worktree Recommendation
+All conditions are satisfied:
 
-When implementation begins, preserve the established isolated workflow pattern:
+- [x] v7 architecture internally consistent;
+- [x] canonical strategic contracts frozen for R1;
+- [x] v6 migration documented;
+- [x] threat / failure model defined;
+- [x] budget / capital semantics defined;
+- [x] Red-Blue and recovery semantics defined;
+- [x] first implementation tasks require no top-level strategic invention;
+- [x] `GATE-V7-R0` accepted.
 
-```text
-main                  accepted state
-feat/backend-*        kernel/backend work
-feat/frontend-*       UI work when activated
-fix/integration-*     integration/test repair
-ops/github-*          release/repository operations
-```
-
-Exact worktree creation is intentionally deferred until CORE-0 contracts are accepted.
-
-## 8. First Dispatch Queue
-
-No production implementation is authorized by this document alone.
-
-The first Controller dispatch after CORE-0 acceptance should be:
-
-```text
-CORE-1-T1  Draft canonical Task schema
-CORE-1-T2  Draft ExecutionPlan schema
-CORE-1-T3  Draft Run/Telemetry schema
-CORE-1-T4  Draft schema versioning rules
-CORE-1-T5  Build schema validation fixtures/tests
-```
-
-Only after `GATE-CORE-1` passes should metering implementation begin.
-
-## 9. Definition of Pre-Development Complete
-
-Pre-development is complete when:
-
-- core contracts are documented;
-- P0 scope is frozen;
-- non-goals are explicit;
-- phase/task IDs exist;
-- acceptance gates are measurable;
-- first backend dispatch can be issued without architecture invention inside the coding task.
-
-At that point Rasputin moves from **PRE-DEVELOPMENT** to **ACTIVE ALPHA DEVELOPMENT**.
+Rasputin is now in **ACTIVE ALPHA / R1 EXECUTABLE CONTRACTS**.
