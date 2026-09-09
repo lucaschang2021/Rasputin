@@ -1,46 +1,83 @@
-# Backend Role — Rasputin
+# Backend Role — Rasputin v7
 
 ## Mission
-Build the headless Rasputin kernel first and make every core capability contract-driven, observable, testable and failure-aware.
+
+Build the headless Sovereign Computational Capital Control Plane after the active architecture/contracts gate is accepted. Make every core capability contract-driven, authority-safe, observable, testable, economically accountable and failure-aware.
+
+## Entry condition
+
+Backend semantic implementation begins only when the active stage gate authorizes it. During v7 migration, R1 remains blocked until `GATE-V7-R0` is accepted.
 
 ## Owns
-- contracts and runtime implementations after Controller approval
-- policy engine
-- routing/gateway
-- execution supervisor
-- MCP/tool bus
-- telemetry/economics
-- evidence chain
-- quality/evaluation
-- optimization loop
-- backend APIs/SDK/CLI boundaries
+
+- executable canonical contracts;
+- Portfolio / Workload implementation;
+- Resource / ResourceState implementation;
+- Capital / Budget ledger primitives;
+- Authority / Policy enforcement;
+- CapitalAllocation and Strategy Compiler implementation;
+- Sovereign Execution Control / supervisor;
+- provider, MCP and other adapter boundaries;
+- telemetry / outcome / failure intelligence;
+- evidence chain implementation;
+- Adaptive Recovery Engine;
+- Red-Blue / assurance runtime hooks required by accepted stages;
+- allocator / learning implementations when their roadmap stage opens;
+- backend APIs / SDK / CLI boundaries.
 
 ## Must not
-- redesign product scope without Controller decision
-- invent frontend-specific API shortcuts
-- bypass policy for convenience
-- hide provider-specific behavior inside core contracts
-- mark a task complete without tests and evidence
+
+- redesign product scope without Controller decision;
+- collapse Policy, Capital Allocation and Strategy Compilation into one opaque router;
+- widen authority for convenience;
+- treat retries as unlimited recovery;
+- hide provider-specific behavior inside canonical contracts;
+- select quarantined resources;
+- oversubscribe hard budgets;
+- make Multi-Agent mandatory without measured utility;
+- mark work complete without tests, failure evidence and gate evidence.
 
 ## Required return format
+
 ```text
-Task ID
+Task / Stage ID
 Summary
 Changed files
-Contract/API impact
-Tests run + results
-Failure cases covered
-Performance notes
-Security notes
+Contract / migration impact
+Capital / authority impact
+Commands executed
+Tests + results
+Failure / recovery cases
+Security / assurance observations
+Performance observations
 Known limitations
-Recommended next action
+Unresolved questions
+Recommended gate decision
 ```
 
-## Backend Gate
-The backend release must demonstrate the full headless chain:
+## Headless Target Chain
+
+The mature backend path is:
 
 ```text
-Task -> Policy -> Plan -> Route -> Execute -> Tool -> Telemetry -> Quality -> Evidence -> Economics -> Optimization
+Portfolio / Workload
+ -> Authority / Policy
+ -> Resource Intelligence
+ -> Capital Allocation
+ -> Strategy Compilation
+ -> Execution Control
+ -> Telemetry / Evidence / Failure
+ -> Recovery when required
+ -> Quality / Outcome
+ -> Learning / Reallocation
 ```
 
-Frontend remains blocked until Controller accepts this gate.
+Cross-cutting requirements:
+
+```text
+Budget Enforcement
+Red-Blue Assurance
+Adaptive Recovery
+```
+
+Frontend remains blocked from inventing semantics not accepted by the backend/contract gate.
