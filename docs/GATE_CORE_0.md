@@ -1,185 +1,90 @@
-# Rasputin — GATE-CORE-0 Review
+# Rasputin — GATE-CORE-0 Historical Record
 
-> Gate: GATE-CORE-0  
-> Scope: Architecture & Contracts  
-> Decision: PASS WITH CONTROLLED ASSUMPTIONS  
-> Date: 2026-08-26
+> **Gate:** GATE-CORE-0  
+> **Original scope:** v6.0-alpha Architecture & Contracts  
+> **Original decision:** PASS WITH CONTROLLED ASSUMPTIONS  
+> **Original date:** 2026-08-26  
+> **Current status:** HISTORICAL / SUPERSEDED BY `GATE-V7-R0`
 
-## 1. Reviewed Artifacts
+## 1. Historical Purpose
 
-- `README.md`
-- `docs/ARCHITECTURE.md`
-- `docs/PRE_DEVELOPMENT.md`
-- `docs/contracts/EXECUTION_SCHEMA.md`
-- `docs/contracts/POLICY_CONTRACT.md`
-- `docs/contracts/EVIDENCE_CONTRACT.md`
+This document records the acceptance decision that authorized the original v6.0-alpha execution-economics architecture.
 
-## 2. Gate Criteria
-
-### Architecture coherence
-
-PASS.
-
-The kernel is consistently defined around:
+The original v6 kernel was organized around:
 
 ```text
 Execution Schema
 Policy
-Economics
-Routing
+Economics / Routing
+Execution
 Telemetry
 Evidence
+Quality
 Optimization
 ```
 
-No P0 component requires blockchain, zk, A2A, polished UI or enterprise multi-tenancy.
+That work remains useful as migration history, but it is no longer the active architecture gate.
 
-### Separation of concerns
+## 2. Why It Was Superseded
 
-PASS.
+Rasputin v7 raises the strategic abstraction from per-task resource routing to a **Sovereign Computational Capital Control Plane** with:
 
-Policy, Economics, Execution and Evidence are explicitly separated.
+```text
+Workload Portfolio
+Resource Intelligence
+Computational Capital Allocation
+Shadow Pricing
+Execution Authority
+Outcome / Failure Intelligence
+Adaptive Recovery
+Red-Blue Adversarial Assurance
+Risk / Irreversibility / Recovery Budgets
+Portfolio Reallocation
+```
 
-### Trust claims bounded
+The active gate is therefore:
 
-PASS.
+```text
+GATE-V7-R0
+```
 
-P0 claims only tamper-evident local provenance under a local-runtime trust assumption. Remote attestation, semantic correctness and zero-knowledge guarantees remain future work.
+## 3. Migration Rule
 
-### Scope firewall
+The original `GATE-CORE-0 = PASS` decision is not revoked; it remains a truthful historical record of the v6 baseline.
 
-PASS.
+However:
 
-Commoditized/integration capabilities are not treated as core moat and P1/P2/P3 features are prevented from blocking P0.
+- it does **not** authorize new implementation against superseded v6-only contracts;
+- it does **not** override v7 authority, capital, recovery or assurance contracts;
+- old CORE-1 dispatch language is historical only;
+- the next executable implementation stage is v7 `R1`, after `GATE-V7-R0` acceptance.
 
-### Backend implementability
+## 4. Historical Controlled Assumptions
 
-PASS.
+The following unresolved implementation choices remain valid as implementation-level questions unless v7 contracts further constrain them:
 
-Backend can implement CORE-1 schemas and fixtures without inventing new top-level architecture.
-
-## 3. Controlled Assumptions
-
-The following are intentionally unresolved until implementation evidence exists:
-
-1. programming-language and schema-library choice;
-2. canonical serialization implementation choice;
+1. programming language / schema library;
+2. canonical serialization implementation;
 3. persistent store choice;
-4. concrete LiteLLM/provider integration details;
-5. quality evaluator design;
-6. economics objective weighting;
-7. runtime attestation standard/adapters.
+4. concrete provider/gateway adapters;
+5. evaluator implementation;
+6. allocator objective calibration;
+7. runtime attestation adapters.
 
-These are implementation or later-phase decisions and do not block CORE-1.
+## 5. Active Source of Truth
 
-## 4. Decision
-
-`GATE-CORE-0 = PASS`
-
-Rasputin state changes from:
+For current work, read:
 
 ```text
-PRE-DEVELOPMENT / CORE-0
+README.md
+docs/00-PROJECT-CONTROL.md
+docs/01-MASTER-TECHNICAL-DESIGN.md
+docs/02-DELIVERY-BOARD.md
+docs/03-DEVELOPMENT-WORKFLOW.md
+docs/04-PROJECT-STATE.md
+docs/ARCHITECTURE.md
+docs/GATE_V7_R0.md
+docs/contracts/*
 ```
 
-to:
-
-```text
-ACTIVE ALPHA DEVELOPMENT / CORE-1
-```
-
-Only CORE-1 work is authorized next. CORE-2+ work remains blocked until `GATE-CORE-1` passes.
-
-## 5. CORE-1 Backend Dispatch
-
-### CORE-1-T1 — Canonical Task Schema
-
-Objective:
-
-Implement the Task object defined in `EXECUTION_SCHEMA.md`.
-
-Deliverables:
-
-- typed schema/model;
-- validation;
-- serialization;
-- fixture: valid minimal task;
-- fixture: invalid budget/task constraints;
-- unit tests.
-
-Forbidden scope:
-
-- provider routing;
-- API calls;
-- database integration;
-- UI;
-- blockchain;
-- Agent orchestration.
-
-### CORE-1-T2 — PolicyDecision Schema
-
-Implement the canonical PolicyDecision object only.
-
-Deliverables:
-
-- typed model;
-- validation;
-- stable serialization;
-- allow/deny fixtures;
-- tests.
-
-No policy engine logic yet.
-
-### CORE-1-T3 — ExecutionPlan Schema
-
-Implement canonical ExecutionPlan and strategy sub-objects.
-
-Required cases:
-
-- cloud model strategy;
-- local strategy;
-- tool-using strategy;
-- fallback plan.
-
-No routing algorithm yet.
-
-### CORE-1-T4 — Run / Telemetry / Quality Schemas
-
-Implement:
-
-- Run;
-- TelemetryRecord;
-- QualityEvaluation.
-
-Tests must cover failed run, retry-relevant error metadata and finalized success.
-
-### CORE-1-T5 — Versioning & Golden Fixtures
-
-Build the canonical fixture suite required by the execution contract.
-
-Required fixtures:
-
-1. cloud model run;
-2. local-model run;
-3. tool-using run;
-4. denied-by-policy task;
-5. budget-constrained fallback run;
-6. failed run with retry;
-7. finalized run with evidence references.
-
-Define compatibility tests for schema version handling.
-
-## 6. GATE-CORE-1 Acceptance
-
-CORE-1 passes only if:
-
-```text
-all canonical objects implemented
-+ validation tests pass
-+ serialization tests pass
-+ golden fixtures pass
-+ versioning behavior is explicit
-+ no forbidden P1+ dependency introduced
-```
-
-The Controller must review the evidence before CORE-2 begins.
+> **Historical decision preserved; implementation authority superseded.**
