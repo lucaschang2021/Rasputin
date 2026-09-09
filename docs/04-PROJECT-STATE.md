@@ -1,28 +1,28 @@
 # Rasputin — Project State
 
 > **Updated:** 2026-09-09  
-> **Architecture:** v7.0 Strategic Migration  
-> **Development mode:** R0 ARCHITECTURE / CONTRACT MIGRATION
+> **Architecture:** v7.0 — Sovereign Computational Capital Control Plane  
+> **Development mode:** ACTIVE ALPHA / R1 EXECUTABLE CONTRACTS
 
 ## Control State
 
 ```text
 v5.0 historical full-domain vision        FROZEN
-v6.0-alpha execution-economics baseline   PRESERVED
+v6.0-alpha execution-economics baseline   PRESERVED / HISTORICAL MIGRATION BASE
 v7.0 strategic target                     ACTIVE
-GATE-V7-R0                                OPEN
-v7 contracts                              UNFROZEN / MIGRATING
-Backend semantic implementation           PAUSED pending GATE-V7-R0
-Frontend                                  BLOCKED
-Integration/Test                          BLOCKED
-GitHub/Release                            BLOCKED
+GATE-V7-R0                                ACCEPTED
+v7 architecture/contracts                 FROZEN FOR R1
+Backend R1                                OPEN
+Frontend                                  BLOCKED by accepted backend surface gates
+Integration/Test/Assurance                BLOCKED until relevant implementation exists
+GitHub/Release                            STAGE-GATED
 ```
 
-## Strategic Change
+## Strategic Baseline
 
-Rasputin is now defined as a **Sovereign Computational Capital Control Plane** rather than a per-task Agent resource router.
+Rasputin is defined as a **Sovereign Computational Capital Control Plane**.
 
-The retained v6 kernel concepts are:
+Retained v6 kernel concepts:
 
 ```text
 Execution
@@ -35,7 +35,7 @@ Quality
 Optimization
 ```
 
-The v7 expansion adds:
+v7 core expansion:
 
 ```text
 Workload Portfolio
@@ -56,25 +56,29 @@ RCB / RARB benchmarks
 
 ## Current Objective
 
-Complete R0 migration:
+Implement **R1 — Executable Canonical Contracts** without introducing R2+ behavior.
+
+Target R1 objects:
 
 ```text
-Constitution
- -> Architecture
- -> Project Control
- -> Contract migration
- -> Threat / Failure Model
- -> Capital / Budget Model
- -> Red-Blue / Recovery semantics
- -> Delivery Board
- -> GATE-V7-R0 acceptance
+Portfolio / Workload
+Resource / ResourceState
+BudgetEnvelope / BudgetLedger
+PolicyDecision / AuthorityEnvelope
+CapitalAllocation
+ExecutionPlan / Run
+TelemetryRecord
+FailureRecord / RecoveryEpisode
+QualityEvaluation / OutcomeRecord
+RedBlueScenario / AssuranceResult
+Evidence bindings
 ```
 
 ## Current Admission
 
-**Admitted:** documentation and contract migration work only, plus implementation-neutral engineering preparation.
+**Admitted:** `R1-T1` through `R1-T9` as defined in `docs/10-BACKEND-WORK-PACKAGE.md`.
 
-**Not admitted:** production code that hard-binds Rasputin to superseded v6 Task/Router-only semantics.
+**Not admitted yet:** learned allocation, online bandits, production MCP/A2A execution, autonomous red team, TEE-specific coupling, blockchain dependency, ZK circuits, inter-org markets or polished frontend.
 
 ## Core Target Chain
 
@@ -115,3 +119,7 @@ Rasputin must become strong through depth in:
 - safe learning and rollback.
 
 Commodity technologies remain adapters unless a proven gap requires native implementation.
+
+## Gate Record
+
+`GATE-V7-R0` was accepted on 2026-09-09 after Controller consistency review. Any R1 implementation discovery that contradicts the frozen v7 semantics must return to Controller under the No-Drift Rule.
