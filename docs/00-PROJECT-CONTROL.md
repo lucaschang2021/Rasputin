@@ -1,8 +1,8 @@
 # Rasputin — Project Control
 
 > **Document class:** Controller / Source of Truth  
-> **Version:** v7.0-strategic-migration  
-> **Status:** R0 ARCHITECTURE / CONTRACT MIGRATION  
+> **Version:** v7.0  
+> **Status:** ACTIVE ALPHA / R1 EXECUTABLE CONTRACTS  
 > **Control mode:** Portfolio-first · Contract-first · Backend-first · Gate-driven · Evidence-backed
 
 ## 1. Absolute Development Order
@@ -15,17 +15,17 @@ Controller
 ARCHITECTURE / CONTRACT GATE
    ↓
 BACKEND
-   ↓  GATE-BE
-FRONTEND
-   ↓  GATE-FE
+   ↓  STAGE GATE
+FRONTEND where admitted
+   ↓
 INTEGRATION + TEST + RED-BLUE + RECOVERY
-   ↓  GATE-INT
+   ↓  SYSTEM GATE
 GITHUB / RELEASE
-   ↓  GATE-REL
+   ↓
 MAIN ACCEPTED STATE
 ```
 
-No implementation lane may silently freeze v6 semantics while v7 R0 migration is open.
+`GATE-V7-R0` is ACCEPTED. R1 executable contract implementation is now admitted.
 
 ## 2. Controller Authority
 
@@ -93,19 +93,19 @@ Optimization targets downstream task / workflow / business / research outcomes w
 
 ### 4.6 Recovery is budgeted
 
-Retries and failovers consume capital. Recovery must stop when expected remaining value no longer justifies expected recovery cost or risk.
+Retries and failovers consume capital. Recovery stops when expected remaining value no longer justifies expected recovery cost/risk or when authorized recovery capacity is exhausted.
 
 ### 4.7 Red-blue is continuous
 
-Allocator, policy, runtime, MCP/A2A, memory, verifier, telemetry, outcome and recovery must all be adversarially tested.
+Allocator, policy, runtime, MCP/A2A, memory, verifier, telemetry, outcome and recovery are all valid adversarial targets when their stage is active.
 
 ### 4.8 Standards by composition
 
 External protocols and commodity infrastructure default to adapters. Rasputin concentrates proprietary depth on capital models, resource intelligence, allocation, authority semantics, outcome/failure intelligence, recovery and assurance.
 
-## 5. v7 R0 Strategic Freeze Scope
+## 5. Frozen v7 R1 Contract Scope
 
-R0 freezes the following canonical concepts before backend implementation resumes:
+`GATE-V7-R0` froze the strategic semantics of:
 
 ```text
 Principal / Portfolio / Workload
@@ -118,8 +118,10 @@ Telemetry / Evidence
 FailureRecord / RecoveryEpisode
 QualityEvaluation / OutcomeRecord
 RedBlueScenario / AssuranceResult
-Learning / Reallocation Decision
+Learning / Reallocation boundaries
 ```
+
+R1 implements these contracts; it does not redesign them silently.
 
 ## 6. Acceptance Evidence
 
@@ -138,6 +140,8 @@ A gate may require:
 - performance data;
 - known limitations;
 - Controller ACCEPT / REJECT decision.
+
+The required evidence set scales with stage; R1 is principally a schema/fixture/migration gate.
 
 ## 7. Quality Bar
 
@@ -173,31 +177,32 @@ Otherwise classify it as Adapter / Commodity / Research / Backlog / Deferred.
 ## 9. Current Control State
 
 ```text
-v5.0 historical vision                 FROZEN
-v6.0-alpha migration baseline           PRESERVED
-v7.0 strategic target                   ACTIVE
-v7 R0 architecture migration            OPEN
-v7 contracts                             UNFROZEN / MIGRATING
-Backend implementation                   PAUSED at semantic-freezing changes
-Frontend                                 BLOCKED
-Integration / Release                    BLOCKED
+v5.0 historical vision                  FROZEN
+v6.0-alpha migration baseline            PRESERVED / HISTORICAL
+v7.0 strategic target                    ACTIVE
+GATE-V7-R0                               ACCEPTED
+v7 strategic contracts                  FROZEN FOR R1
+Backend R1                               OPEN
+Frontend                                 BLOCKED by backend surface gates
+Integration / Assurance                  BLOCKED until relevant implementation exists
+Release                                  STAGE-GATED
 ```
-
-Backend work that is purely infrastructure-neutral may be prepared, but no code may hard-bind the system to superseded v6 contract semantics before `GATE-V7-R0`.
 
 ## 10. Current Objective
 
-Complete v7 R0:
+Execute R1 exactly as defined in `docs/10-BACKEND-WORK-PACKAGE.md`:
 
 ```text
-Constitution
- -> Architecture
- -> Contracts
- -> Threat / Failure Model
- -> Capital / Budget Model
- -> Red-Blue / Recovery Semantics
- -> Delivery Board
- -> Migration Gate
+Portfolio / Workload schemas
+ -> Resource / ResourceState
+ -> Capital / Budget
+ -> Authority / Policy
+ -> CapitalAllocation / ExecutionPlan / Run
+ -> Telemetry / Failure / Recovery / Outcome
+ -> Assurance contracts
+ -> Evidence bindings
+ -> Golden fixtures / v6 migration tests
+ -> GATE-R1
 ```
 
-Only then resume the implementation train.
+Any contradiction discovered during R1 returns to Controller before code proceeds.
