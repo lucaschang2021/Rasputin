@@ -1,440 +1,436 @@
-# Rasputin v6.0-alpha — Master Technical Design
+# Rasputin v7.0 — Master Technical Design
 
-> **Purpose:** Define the complete target system before feature-by-feature implementation.  
-> **Mode:** Pre-planned, backend-first, stage-gated development.
+> **Purpose:** Define the complete v7 target system before implementation resumes.  
+> **Mode:** portfolio-first · controller-first · backend-first · stage-gated.
 
 ## 1. System Mission
 
-Rasputin is a full-stack Agent infrastructure kernel for economically efficient, governed and verifiable intelligent execution across finance, legal, supply-chain and other high-responsibility domains.
+Rasputin is a sovereign control plane for economically efficient, governed, verifiable and resilient AI execution.
 
-It is designed to answer four questions for every task:
+For every portfolio and workload it must answer:
 
-1. **What resources should execute this task?**
-2. **Under what policy constraints may they execute?**
-3. **What did the system actually execute and at what economic cost?**
-4. **How can the next execution become better without violating governance?**
+1. **Is this workload worth executing now?**
+2. **How much computational capital should it receive?**
+3. **Which resources and strategy should spend that capital?**
+4. **Under whose authority and policy may execution occur?**
+5. **What actually happened, failed or recovered?**
+6. **What real outcome and economic value resulted?**
+7. **How should the next allocation change?**
 
-## 2. Target Architecture
+## 2. Capital Brain
 
 ```text
-                 APPLICATION / TERMINAL / OBSIDIAN
-                              |
-                              v
-                    +------------------+
-                    |   TASK GATEWAY   |
-                    +---------+--------+
-                              |
-                              v
-                    +------------------+
-                    |  POLICY ENGINE   |
-                    +---------+--------+
-                              |
-                              v
-                  +----------------------+
-                  | ECONOMICS / ROUTER   |
-                  +----------+-----------+
-                             |
-                 +-----------+-----------+
-                 |                       |
-                 v                       v
-        +----------------+       +----------------+
-        | AGENT RUNTIME  |       | TOOL / MCP BUS |
-        +-------+--------+       +-------+--------+
-                |                        |
-                +-----------+------------+
-                            |
-                            v
-                 +-----------------------+
-                 | EXECUTION SUPERVISOR  |
-                 +-----+-----------+-----+
-                       |           |
-                       v           v
-                 TELEMETRY      EVIDENCE
-                       |           |
-                       +-----+-----+
-                             |
-                             v
-                 +-----------------------+
-                 | QUALITY / EVALUATION  |
-                 +-----------+-----------+
-                             |
-                             v
-                 +-----------------------+
-                 | OPTIMIZATION ENGINE   |
-                 +-----------+-----------+
-                             |
-                             +----> future policies / routing / harnesses
+WORKLOAD PORTFOLIO
+        |
+        v
++---------------------------------------------+
+| VALUE INTELLIGENCE                          |
+| expected outcome / uncertainty / VoI        |
++---------------------------------------------+
+| RESOURCE INTELLIGENCE                       |
+| capability / health / price / scarcity      |
++---------------------------------------------+
+| CAPITAL PRICING                             |
+| nominal / shadow / opportunity / risk cost  |
++---------------------------------------------+
+| ALLOCATION                                  |
+| rules / Lagrangian / bandits / scheduling   |
++---------------------------------------------+
+| AUTHORITY                                   |
+| policy / risk / irreversibility / approval  |
++---------------------------------------------+
+| LEARNING                                    |
+| attribution / OPE / online safe adaptation  |
++---------------------------------------------+
+        |
+        v
+EXECUTION STRATEGY COMPILER
 ```
 
-## 3. Core Subsystems
+The Capital Brain is the primary proprietary center of gravity.
 
-### 3.1 Task Gateway
+## 3. Workload / Portfolio Model
 
-Responsibilities:
-
-- validate canonical task contracts;
-- attach tenant/context metadata;
-- assign trace/run identities;
-- normalize application-specific input into Rasputin contracts;
-- reject malformed or unsupported requests before model/tool expenditure occurs.
-
-Future support:
-
-- REST/HTTP;
-- local IPC;
-- Python SDK;
-- CLI;
-- MCP/A2A-compatible entry adapters.
-
-### 3.2 Policy Engine
-
-Policy Engine is authoritative for what may happen.
-
-It evaluates:
+Each Workload contains objective-level semantics:
 
 ```text
-Task
-+ Tenant Policy
-+ Data Classification
-+ Runtime Context
-+ Operator Rules
+workload_id
+portfolio_id
+principal_ref
+objective
+input_refs
+expected_value / value_model_ref
+uncertainty
+priority
+deadline
+dependencies
+capability_requirements
+quality_floor
+privacy_class
+risk_class
+irreversibility_class
+budget_envelope
+metadata
 ```
 
-against constraints including:
+A Portfolio groups workloads that compete for shared scarce resources.
 
-- max total cost;
-- allowed/denied models;
-- allowed/denied tools;
-- local-only / cloud-allowed modes;
-- privacy classes;
-- verification levels;
-- retry ceilings;
-- execution time limits;
-- human approval gates;
-- domain compliance profiles.
+## 4. Resource Intelligence
 
-The Policy Engine never chooses a plan merely because it is cheaper; it defines the feasible execution space.
+A canonical Resource may represent a model, harness, tool, memory system, verifier, human reviewer, runtime, GPU, quota pool, sandbox or external router.
 
-### 3.3 Agent Economics Engine
-
-This is a principal Rasputin differentiator.
-
-It evaluates candidate strategies over dimensions such as:
+Canonical dynamic ResourceState should include:
 
 ```text
-Model
+availability
+health
+nominal_price
+quota_remaining
+latency estimate
+failure rate
+historical success by workload class
+privacy / locality
+risk class
+verification support
+attestation state
+shadow_price components
+```
+
+Resource state is time-dependent and may invalidate queued plans.
+
+## 5. Computational Capital Allocator
+
+### 5.1 Objective
+
+The allocator chooses workload admission, budget allocation and strategy class under multiple shared constraints.
+
+### 5.2 Algorithm progression
+
+**A0 — deterministic:** explicit rules, weighted utility, hard budgets.  
+**A1 — dual / shadow pricing:** Lagrangian relaxation and scarcity prices.  
+**A2 — offline value models:** historical strategy-outcome prediction.  
+**A3 — constrained contextual bandits:** bounded online exploration.  
+**A4 — portfolio / sequential control:** scheduling, delayed rewards and non-stationarity.  
+**A5 — research:** robust/CVaR control, market-assisted allocation, inter-org settlement.
+
+Every learned stage requires a reproducible deterministic baseline and rollback path.
+
+### 5.3 Value of Information
+
+The allocator may spend capital to improve its own decision only when expected information value exceeds decision cost.
+
+Possible actions:
+
+```text
+classify cheaply
+buy deeper evaluator
+run pilot execution
+sample alternate model
+request human estimate
+execute directly
+defer
+```
+
+## 6. Strategy Compiler
+
+Produces an ExecutionPlan from an admitted allocation.
+
+```text
+Model / Provider / Venue
 Harness
 Agent topology
-Tool set
-Memory strategy
-Local/cloud compute
-Cache strategy
+Tools / MCP
+Memory / Retrieval
+Test-time compute
+Runtime / Sandbox
 Verification intensity
+Fallback / Recovery policy
 ```
 
-Conceptual objective:
+The compiler cannot select resources outside the AuthorityEnvelope or allocation limits.
+
+## 7. Sovereign Execution Control
+
+Lifecycle:
 
 ```text
-argmax StrategyUtility
+prepare
+ -> validate current resource state
+ -> authorize
+ -> reserve ledgers
+ -> dispatch
+ -> observe
+ -> control
+ -> recover / abort
+ -> verify
+ -> finalize
+ -> release / settle reservations
 ```
 
-where utility can incorporate quality, expected success, latency, monetary cost, verification burden and risk.
+Must support:
 
-P0 begins with deterministic rules and experimental comparisons. Later versions may use learned routing, bandits, Bayesian optimization or offline policy learning.
+- timeouts and cancellation;
+- runtime permission checks;
+- tool-level scopes;
+- resource quarantine;
+- provider circuit breakers;
+- policy-safe fallback;
+- parent/child run lineage;
+- structured events;
+- idempotency where applicable;
+- human approval artifacts;
+- graceful degradation.
 
-### 3.4 Gateway & Model Abstraction
+## 8. Budget and Ledger System
 
-Initial implementation may integrate LiteLLM or equivalent adapters.
-
-Core requirements:
-
-- provider-independent request abstraction;
-- provider capability registry;
-- normalized usage/cost accounting;
-- retries/fallbacks controlled by policy;
-- local model adapter support;
-- semantic cache interface;
-- model health/circuit-breaker signals.
-
-Vendor gateway code is replaceable infrastructure, not Rasputin's identity.
-
-### 3.5 Agent Runtime
-
-Agent Runtime supports increasing execution sophistication:
-
-**Level 0:** direct single-model task.  
-**Level 1:** model + tools.  
-**Level 2:** planner/executor.  
-**Level 3:** planner/executor/reviewer.  
-**Level 4:** adaptive multi-agent workflows.
-
-Important rule:
-
-> Multi-agent execution is selected only when its measured marginal utility justifies its marginal economic and reliability cost.
-
-Possible orchestration adapters include LangGraph or other compatible runtimes, but Rasputin contracts must remain independent from a specific orchestration library.
-
-### 3.6 MCP / Tool Bus
-
-Responsibilities:
-
-- tool discovery and registration;
-- capability metadata;
-- schema validation;
-- permission enforcement;
-- invocation tracing;
-- normalized success/failure results;
-- tool cost and latency tracking.
-
-Future vertical packs:
-
-- Financial MCP Pack;
-- Legal MCP Pack;
-- Supply-chain MCP Pack;
-- Research/Data MCP Pack.
-
-### 3.7 Memory System
-
-Memory is layered rather than one vector database:
+Budget dimensions:
 
 ```text
-L0 Run Context
-L1 Working Memory
-L2 Episodic Execution Memory
-L3 Semantic Knowledge / RAG
-L4 SOP / Procedural Memory
-```
-
-Memory writes are governed by explicit retention policy. Sensitive payloads must not automatically become long-term memory.
-
-### 3.8 Execution Supervisor
-
-The Supervisor owns runtime lifecycle:
-
-```text
-prepare -> execute -> observe -> retry/abort -> finalize
-```
-
-It must support:
-
-- cancellation;
-- timeout;
-- retry budgets;
-- idempotency keys where applicable;
-- tool/model failure isolation;
-- circuit breakers;
-- parent/child run relationships;
-- structured event emission.
-
-### 3.9 Telemetry & Observability
-
-Rasputin records normalized execution economics and reliability signals:
-
-```text
-input/output tokens
-provider/model
-cache hits
-cost
+money
+compute
+token / quota
 latency
-retry count
-failure class
-tool calls
-quality signal
-policy decision
-verification level
+verification
+human attention
+risk
+irreversibility
+recovery
 ```
 
-The telemetry layer serves both operations and future academic/economic analysis.
-
-### 3.10 Evidence & Provenance
-
-Rasputin is evidence-first.
-
-Initial chain:
+Ledger operations should support:
 
 ```text
-Canonical Execution Record
-        -> Content Hash
-        -> Parent-linked Hash Chain
-        -> Merkle Batch
-        -> Optional External Anchor
+reserve
+consume
+release
+adjust
+expire
+settle
 ```
 
-Evidence may commit to:
+Every material consumption must reference a workload/run and allocation decision.
 
-- input/output references;
-- model/runtime identity;
-- policy version;
-- execution plan;
-- tool invocations;
-- telemetry digest;
-- quality result;
-- timestamps;
-- parent execution evidence.
+## 9. Adaptive Recovery Engine
 
-Later adapters may provide hardware attestation, enterprise ledgers or L2 anchoring.
-
-### 3.11 Quality & Evaluation
-
-Quality must be explicit enough to compare strategies.
-
-Possible evaluators:
-
-- deterministic checks;
-- reference-based scoring;
-- domain rules;
-- reviewer models;
-- human labels;
-- task success signals;
-- downstream business metrics.
-
-No optimization loop may optimize an undefined quality metric.
-
-### 3.12 Optimization Engine
-
-Stages:
-
-**v0:** experiment registry + baseline comparison.  
-**v1:** historical telemetry-assisted routing.  
-**v2:** harness/routing recommendations.  
-**v3:** guarded automatic optimization with rollback.  
-**v4:** cross-workload learned execution policies.
-
-Automatic mutation must never bypass policy, evaluation or rollback gates.
-
-## 4. Security Architecture
-
-Security principles:
-
-- secrets never stored in source;
-- least-privilege tool access;
-- data classification before external transmission;
-- sandboxed code execution;
-- explicit local-only execution policies;
-- signed/versioned policy artifacts in mature stages;
-- no raw chain-of-thought requirement;
-- sensitive evidence uses commitments/hashes rather than payload duplication;
-- dependency pinning and supply-chain scanning;
-- audit trails for administrative actions.
-
-## 5. Zero-Knowledge Strategy
-
-Rasputin will not claim to prove hidden model reasoning.
-
-The R&D objective is to prove statements such as:
+Recovery protocol:
 
 ```text
-execution used an approved model
-execution stayed inside approved tool set
-private risk score satisfied threshold
-required policy version was enforced
-required environment/attestation was present
+DETECT -> DIAGNOSE -> CONTAIN -> RECOVER -> VERIFY -> REALLOCATE -> LEARN
 ```
 
-without revealing protected business data.
-
-This is **Zero-Knowledge Compliance**, not chain-of-thought proof.
-
-## 6. Cross-Organization / A2A Strategy
-
-Long-term Rasputin treats A2A as an interoperability surface around which it can provide:
-
-- identity;
-- policy;
-- permissions;
-- economics;
-- evidence;
-- settlement hooks.
-
-It should adopt interoperable standards rather than create a closed protocol unless a concrete unmet requirement proves necessary.
-
-## 7. Application Surfaces
-
-Rasputin Core must support multiple consumers without domain coupling.
-
-### FlowTracer
-
-Real recurring information workload for routing/cost/cache experiments.
-
-### Möbius
-
-Harness and engineering-workflow laboratory.
-
-### FinTerminal
-
-Finance vertical integrating research, allocation, risk, audit and financial data tools.
-
-### Future terminals
-
-LawTerminal, SupplyTerminal and other domain packs are plugin/application layers.
-
-## 8. Repository Target
+### 9.1 Failure taxonomy
 
 ```text
-rasputin/
-  core/
-    contracts/
-    policy/
-    economics/
-    routing/
-    runtime/
-    telemetry/
-    evidence/
-    evaluation/
-    optimization/
-  adapters/
-    models/
-    mcp/
-    storage/
-    attestation/
-    anchoring/
-  api/
-  cli/
-  frontend/
-  tests/
-    unit/
-    contract/
-    integration/
-    e2e/
-    performance/
-    security/
-  fixtures/
-  docs/
-  scripts/
-  infra/
+provider_unavailable
+model_degraded
+tool_failure
+runtime_failure
+policy_violation
+quality_failure
+verifier_disagreement
+memory_corruption
+context_poisoning
+quota_exhaustion
+latency_degradation
+security_incident
+outcome_failure
+unknown
 ```
 
-Exact language/framework layout may evolve during backend baseline selection, but architectural boundaries must remain recognizable.
-
-## 9. Strength Targets
-
-Rasputin should become powerful through depth, not uncontrolled feature count.
-
-Target characteristics:
-
-- provider-agnostic;
-- framework-agnostic contracts;
-- local/private capable;
-- multi-agent capable;
-- measurable economics;
-- strong policy enforcement;
-- cryptographic provenance;
-- rich observability;
-- reproducible evaluation;
-- extensible adapters;
-- safe optimization;
-- cross-domain applicability;
-- future-ready verification and A2A support.
-
-## 10. Implementation Law
-
-The complete vision is preserved, but implementation proceeds in strict dependency order.
+### 9.2 Containment
 
 ```text
-strong foundation
-before broad surface area
-before autonomous optimization
-before protocol-level ambition
+freeze run
+revoke capability
+quarantine resource
+reduce privilege
+block egress
+stop child runs
 ```
 
-Rasputin should eventually be extremely capable; it must not become fragile in the process.
+### 9.3 Recovery actions
+
+```text
+retry
+reroute
+alternate model / tool / harness
+restore checkpoint / memory
+rollback state
+degrade quality target within policy
+escalate verification
+human escalation
+abort / defer
+```
+
+### 9.4 Economic stop rule
+
+Recovery continues only while expected remaining risk-adjusted value justifies expected recovery cost and additional irreversible risk.
+
+Provider-wide or tool-fleet incidents may trigger portfolio reallocation and shadow-price updates.
+
+## 10. Red-Blue Adversarial Assurance Engine
+
+### 10.1 Red targets
+
+- allocator manipulation;
+- fake value / urgency / scarcity;
+- policy bypass;
+- prompt/tool injection;
+- poisoned memory/context;
+- resource identity spoofing;
+- verifier gaming;
+- telemetry or outcome manipulation;
+- quota / latency / provider shocks;
+- recovery abuse;
+- cross-agent authority confusion.
+
+### 10.2 Blue responses
+
+- deny / require approval;
+- tighten policy;
+- reduce privileges / budgets;
+- isolate or quarantine resource;
+- sanitize context;
+- add verification;
+- substitute resource;
+- rollback memory/state;
+- revoke authority;
+- terminate execution.
+
+### 10.3 Shadow and Chaos modes
+
+**Shadow Mode:** compare candidate strategies / defenses without producing external side effects.  
+**Controlled Chaos:** inject bounded failures such as provider outage, timeout, malformed tool response, quota exhaustion, verifier failure or stale resource state.
+
+Red-team execution must itself obey policy and test-environment boundaries.
+
+## 11. Outcome & Failure Intelligence
+
+Outcome is appendable after run finalization because business/research value may arrive later.
+
+```text
+OutcomeRecord:
+  technical_success
+  task_success
+  workflow_outcome
+  downstream_event_refs
+  realized_value
+  currency / value_unit
+  risk_adjustment
+  attribution_confidence
+```
+
+Failure Intelligence records failure class, suspected cause, resource state, blast radius, attempted recoveries, recovery cost and final result.
+
+## 12. Telemetry and Observability
+
+Prefer OpenTelemetry-compatible trace/metric/event semantics for raw execution observability.
+
+Rasputin-specific economic dimensions include:
+
+```text
+nominal_cost
+shadow_cost
+scarcity_cost
+opportunity_cost
+risk_consumed
+irreversibility_consumed
+recovery_cost
+expected_value
+realized_value
+marginal_utility
+allocation_reason
+```
+
+## 13. Evidence and Verification
+
+Evidence is separate from telemetry and quality.
+
+```text
+Canonical Record
+ -> deterministic serialization
+ -> content hash
+ -> parent-linked hash chain
+ -> Merkle batch
+ -> optional signatures / transparency
+ -> optional runtime attestation
+ -> optional external anchor
+ -> future ZK compliance
+```
+
+Verification intensity is a capital allocation variable. Hidden chain-of-thought is neither required nor claimed.
+
+## 14. Standards / Adapter Strategy
+
+Rasputin should integrate rather than reimplement where appropriate:
+
+```text
+MCP                tool/data protocol
+A2A                agent protocol
+OpenTelemetry      observability transport
+OPA/Rego / Cedar   policy backends
+SPIFFE/SPIRE       workload identity
+OpenRouter/LiteLLM execution venues / gateway adapters
+LangGraph etc.     orchestration adapters
+Semantica etc.     context/provenance adapters
+TEE/attestation    trust adapters
+```
+
+Core semantics remain vendor-neutral.
+
+## 15. Research / Product Metrics
+
+### ROCC
+
+```text
+Return on Computational Capital =
+Risk-Adjusted Outcome Value / Effective Computational Capital
+```
+
+### RCB
+
+Capital allocation benchmark: portfolio utility, verified success, effective cost, SLA, budget/risk consumption and ROCC.
+
+### RARB
+
+Adversarial / resilience benchmark: bypass, unauthorized action, MTTD, MTTR, recovery success/cost, blast radius and portfolio utility under failure/attack.
+
+## 16. Repository Target
+
+```text
+core/
+  contracts/
+  portfolio/
+  authority/
+  resources/
+  capital/
+  strategy/
+  runtime/
+  telemetry/
+  outcome/
+  failure/
+  recovery/
+  evidence/
+  learning/
+  assurance/
+adapters/
+benchmarks/
+api/
+cli/
+frontend/
+tests/
+fixtures/
+docs/
+```
+
+## 17. Implementation Law
+
+```text
+stable contracts
+before allocation intelligence
+before autonomous learning
+before market mechanisms
+before ZK / inter-org ambition
+```
+
+No feature enters the kernel merely because it is technically impressive. It must improve risk-adjusted outcome value, allocation efficiency, authority, resilience, verifiability, interoperability or learning quality.
