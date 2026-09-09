@@ -1,9 +1,9 @@
 # Rasputin v7 — Backend Work Package R1
 
 > **Owner:** Backend  
-> **Entry:** BLOCKED until `GATE-V7-R0`  
+> **Entry:** OPEN — `GATE-V7-R0` ACCEPTED  
 > **Sequence:** R1 contracts → R2 ledger/telemetry → R3 resources → R4 authority ...  
-> **Rule:** No v6 semantic lock-in before v7 R0 acceptance.
+> **Rule:** implement frozen v7 semantics; do not pull forward R2+ features.
 
 ## R1 Objective
 
@@ -57,6 +57,7 @@ Implement:
 - BudgetLedgerEntry;
 - reserve / consume / release / settle semantics;
 - money / compute / quota / latency / verification / human / risk / irreversibility / recovery dimensions;
+- unambiguous quantity/unit types;
 - concurrency-safe hard-budget primitives or explicit abstraction for them.
 
 ### R1-T4 — Authority / Policy
@@ -126,7 +127,7 @@ Fixtures must include:
 7. failed run with bounded recovery;
 8. quarantined provider and alternate allocation;
 9. delayed outcome attachment;
-10. red-blue shadow scenario with no production side effect.
+10. Red-Blue shadow scenario with no production side effect.
 
 ## R1 Gate
 
@@ -150,7 +151,7 @@ Do not implement during R1:
 - contextual bandit;
 - production OpenRouter/LiteLLM integration;
 - production MCP/A2A execution;
-- autonomous red team;
+- autonomous Red Team;
 - TEE / remote attestation;
 - blockchain anchoring;
 - ZK circuits;
