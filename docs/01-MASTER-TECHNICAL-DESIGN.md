@@ -306,7 +306,7 @@ Recovery protocol:
 DETECT -> DIAGNOSE -> CONTAIN -> RECOVER -> VERIFY -> REALLOCATE -> LEARN
 ```
 
-### 11.1 Failure taxonomy
+### 10.1 Failure taxonomy
 
 ```text
 provider_unavailable
@@ -325,7 +325,7 @@ outcome_failure
 unknown
 ```
 
-### 11.2 Containment
+### 10.2 Containment
 
 ```text
 freeze run
@@ -336,7 +336,7 @@ block egress
 stop child runs
 ```
 
-### 11.3 Recovery actions
+### 10.3 Recovery actions
 
 ```text
 retry
@@ -350,7 +350,7 @@ human escalation
 abort / defer
 ```
 
-### 11.4 Economic stop rule
+### 10.4 Economic stop rule
 
 Recovery continues only while expected remaining risk-adjusted value justifies expected recovery cost and additional irreversible risk.
 
