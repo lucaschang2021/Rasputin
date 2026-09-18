@@ -106,8 +106,9 @@ Principal / Organization
  -> Workload Portfolio
  -> Authority / Policy
  -> Resource Intelligence
- -> Compute Federation / Placement
+ -> Compute Federation / Resource Fabric
  -> Computational Capital Allocation
+ -> Placement
  -> Execution Strategy
  -> Sovereign Execution Control
  -> Telemetry / Evidence / Failure
