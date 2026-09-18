@@ -62,7 +62,10 @@ Principal
  -> Portfolio
  -> Workload
  -> Policy / Authority
- -> Capital Allocation
+ -> Resource Intelligence
+ -> Compute Federation / Resource Fabric
+ -> Computational Capital Allocation
+ -> Placement
  -> Execution Strategy
  -> Execution
  -> Outcome / Failure / Evidence
