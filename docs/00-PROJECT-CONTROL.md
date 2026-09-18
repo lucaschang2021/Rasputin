@@ -1,9 +1,9 @@
 # Rasputin — Project Control
 
 > **Document class:** Controller / Source of Truth  
-> **Version:** v7.0  
+> **Version:** v7.1  
 > **Status:** ACTIVE ALPHA / R1 EXECUTABLE CONTRACTS  
-> **Control mode:** Portfolio-first · Contract-first · Backend-first · Gate-driven · Evidence-backed
+> **Control mode:** Federation-native · Portfolio-first · Contract-first · Backend-first · Gate-driven · Evidence-backed
 
 ## 1. Absolute Development Order
 
@@ -25,7 +25,7 @@ GITHUB / RELEASE
 MAIN ACCEPTED STATE
 ```
 
-`GATE-V7-R0` is ACCEPTED. R1 executable contract implementation is now admitted.
+`GATE-V7-R0` is ACCEPTED. `GATE-V7.1-A0` is ACCEPTED as a backward-compatible architecture amendment. R1 executable contract implementation remains the active admitted stage.
 
 ## 2. Controller Authority
 
@@ -53,7 +53,7 @@ Rasputin is not a generic Agent framework, router, gateway, RAG system, provenan
 
 Core identity:
 
-> **Rasputin = Sovereign Computational Capital Allocation + Execution Authority + Outcome Intelligence + Adversarial Assurance + Adaptive Recovery.**
+> **Rasputin = Compute Federation + Computational Capital Allocation + Execution Authority + Outcome Intelligence + Adversarial Assurance + Adaptive Recovery.**
 
 The control hierarchy is:
 
@@ -99,13 +99,19 @@ Retries and failovers consume capital. Recovery stops when expected remaining va
 
 Allocator, policy, runtime, MCP/A2A, memory, verifier, telemetry, outcome and recovery are all valid adversarial targets when their stage is active.
 
-### 4.8 Standards by composition
+### 4.8 Federation preserves physical truth
+
+Rasputin may expose heterogeneous compute as a logical pool, but it must never erase accelerator compatibility, topology, bandwidth, latency, locality, trust, reservation or failure-domain constraints.
+
+Training-scale tightly coupled workloads and distributed inference/batch workloads may therefore receive materially different placement policies.
+
+### 4.9 Standards by composition
 
 External protocols and commodity infrastructure default to adapters. Rasputin concentrates proprietary depth on capital models, resource intelligence, allocation, authority semantics, outcome/failure intelligence, recovery and assurance.
 
-## 5. Frozen v7 R1 Contract Scope
+## 5. Frozen v7.1 / R1 Compatibility Scope
 
-`GATE-V7-R0` froze the strategic semantics of:
+`GATE-V7-R0` froze the strategic semantics below. `GATE-V7.1-A0` does not silently widen the current R1 implementation contract:
 
 ```text
 Principal / Portfolio / Workload
@@ -122,6 +128,8 @@ Learning / Reallocation boundaries
 ```
 
 R1 implements these contracts; it does not redesign them silently.
+
+v7.1 target federation objects — `ExecutionDomain`, `ComputePool`, `CapacitySlice`, `TopologyDescriptor`, `PlacementDecision`, `Reservation` — are architecture-level additions for later admitted stages. They are not automatically part of R1.
 
 ## 6. Acceptance Evidence
 
@@ -179,9 +187,11 @@ Otherwise classify it as Adapter / Commodity / Research / Backlog / Deferred.
 ```text
 v5.0 historical vision                  FROZEN
 v6.0-alpha migration baseline            PRESERVED / HISTORICAL
-v7.0 strategic target                    ACTIVE
+v7.0 strategic baseline                  PRESERVED / SUPERSEDED
+v7.1 strategic target                    ACTIVE
 GATE-V7-R0                               ACCEPTED
-v7 strategic contracts                  FROZEN FOR R1
+GATE-V7.1-A0                             ACCEPTED
+R1 strategic contracts                   FROZEN / COMPATIBLE
 Backend R1                               OPEN
 Frontend                                 BLOCKED by backend surface gates
 Integration / Assurance                  BLOCKED until relevant implementation exists
@@ -205,4 +215,4 @@ Portfolio / Workload schemas
  -> GATE-R1
 ```
 
-Any contradiction discovered during R1 returns to Controller before code proceeds.
+Any contradiction discovered during R1 returns to Controller before code proceeds. No federation feature may be pulled into R1 merely because v7.1 defines its future semantics.
