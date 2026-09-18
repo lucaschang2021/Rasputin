@@ -93,8 +93,8 @@ Principal / Organization
  -> Authority / Policy
  -> Resource Intelligence
  -> Compute Federation / Resource Fabric
- -> Placement
  -> Computational Capital Allocation
+ -> Placement
  -> Execution Strategy
  -> Sovereign Execution Control
  -> Telemetry / Evidence / Failure
