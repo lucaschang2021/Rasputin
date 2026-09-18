@@ -1,21 +1,22 @@
-# Rasputin v7.0 — Master Technical Design
+# Rasputin v7.1 — Master Technical Design
 
-> **Purpose:** Define the complete v7 target system before implementation resumes.  
-> **Mode:** portfolio-first · controller-first · backend-first · stage-gated.
+> **Purpose:** Define the active v7.1 target system while preserving the accepted R1 contract baseline.  
+> **Mode:** federation-native · portfolio-first · controller-first · backend-first · stage-gated.
 
 ## 1. System Mission
 
-Rasputin is a sovereign control plane for economically efficient, governed, verifiable and resilient AI execution.
+Rasputin is a sovereign control plane and operating system for economically efficient, federated, governed, verifiable and resilient computational capital.
 
 For every portfolio and workload it must answer:
 
 1. **Is this workload worth executing now?**
 2. **How much computational capital should it receive?**
-3. **Which resources and strategy should spend that capital?**
-4. **Under whose authority and policy may execution occur?**
-5. **What actually happened, failed or recovered?**
-6. **What real outcome and economic value resulted?**
-7. **How should the next allocation change?**
+3. **Which execution domain, resources and strategy should spend that capital?**
+4. **How should heterogeneous capacity be pooled and placed without violating topology, locality or trust constraints?**
+5. **Under whose authority and policy may execution occur?**
+6. **What actually happened, failed or recovered?**
+7. **What real outcome and economic value resulted?**
+8. **How should the next allocation and placement change?**
 
 ## 2. Capital Brain
 
@@ -29,6 +30,9 @@ WORKLOAD PORTFOLIO
 +---------------------------------------------+
 | RESOURCE INTELLIGENCE                       |
 | capability / health / price / scarcity      |
++---------------------------------------------+
+| COMPUTE FEDERATION / PLACEMENT              |
+| domains / topology / locality / reservation |
 +---------------------------------------------+
 | CAPITAL PRICING                             |
 | nominal / shadow / opportunity / risk cost  |
@@ -98,13 +102,95 @@ shadow_price components
 
 Resource state is time-dependent and may invalidate queued plans.
 
-## 5. Computational Capital Allocator
+## 5. Compute Federation & Resource Fabric
 
-### 5.1 Objective
+### 5.1 Purpose
+
+Expose physically separate compute domains as one **logical resource fabric** for discovery, accounting and placement, while preserving the constraints that make those domains non-interchangeable.
+
+```text
+Physical Capacity
+  -> Discovery
+  -> Normalized Resource / Domain State
+  -> Logical ComputePool
+  -> Placement Candidates
+  -> Reservation
+  -> Authorized Execution
+```
+
+### 5.2 Canonical objects
+
+```text
+ExecutionDomain
+ComputePool
+CapacitySlice
+TopologyDescriptor
+InterconnectClass
+PlacementConstraint
+PlacementDecision
+Reservation
+FailureDomain
+```
+
+These are v7.1 target objects. They do not expand the already admitted R1 contract gate unless separately dispatched.
+
+### 5.3 Physical truth invariant
+
+A logical pool MUST NOT erase:
+
+```text
+accelerator compatibility
+VRAM / HBM capacity
+memory bandwidth
+NVLink / fabric topology
+east-west network bandwidth
+WAN latency
+data locality / region
+scheduler / runtime capability
+trust / attestation
+failure domain
+reservation / quota state
+```
+
+### 5.4 Workload coordination class
+
+Placement should distinguish at least:
+
+```text
+tightly_coupled_training
+distributed_inference
+batch
+evaluation
+agentic_workflow
+latency_sensitive
+stateful
+embarrassingly_parallel
+```
+
+Tightly coupled training normally requires a single high-bandwidth execution domain. Independent inference or batch workloads may be spread across domains.
+
+### 5.5 Federation responsibilities
+
+- capability discovery;
+- heterogeneous inventory normalization;
+- logical pool construction;
+- reservation / release;
+- topology-aware and locality-aware placement;
+- fragmentation-aware capacity accounting;
+- failover eligibility;
+- provider / region / cluster isolation;
+- placement reason codes;
+- telemetry for effective utilization.
+
+Kubernetes, Slurm, cloud schedulers and accelerator-specific runtimes remain adapters or execution substrates unless a proven semantic gap requires native logic.
+
+## 6. Computational Capital Allocator
+
+### 6.1 Objective
 
 The allocator chooses workload admission, budget allocation and strategy class under multiple shared constraints.
 
-### 5.2 Algorithm progression
+### 6.2 Algorithm progression
 
 **A0 — deterministic:** explicit rules, weighted utility, hard budgets.  
 **A1 — dual / shadow pricing:** Lagrangian relaxation and scarcity prices.  
@@ -115,7 +201,7 @@ The allocator chooses workload admission, budget allocation and strategy class u
 
 Every learned stage requires a reproducible deterministic baseline and rollback path.
 
-### 5.3 Value of Information
+### 6.3 Value of Information
 
 The allocator may spend capital to improve its own decision only when expected information value exceeds decision cost.
 
@@ -131,12 +217,13 @@ execute directly
 defer
 ```
 
-## 6. Strategy Compiler
+## 7. Strategy Compiler
 
 Produces an ExecutionPlan from an admitted allocation.
 
 ```text
 Model / Provider / Venue
+Execution Domain / Compute Pool / Placement
 Harness
 Agent topology
 Tools / MCP
@@ -149,7 +236,7 @@ Fallback / Recovery policy
 
 The compiler cannot select resources outside the AuthorityEnvelope or allocation limits.
 
-## 7. Sovereign Execution Control
+## 8. Sovereign Execution Control
 
 Lifecycle:
 
@@ -157,7 +244,8 @@ Lifecycle:
 prepare
  -> validate current resource state
  -> authorize
- -> reserve ledgers
+ -> reserve ledgers / capacity
+ -> place
  -> dispatch
  -> observe
  -> control
@@ -181,7 +269,7 @@ Must support:
 - human approval artifacts;
 - graceful degradation.
 
-## 8. Budget and Ledger System
+## 9. Budget and Ledger System
 
 Budget dimensions:
 
@@ -210,7 +298,7 @@ settle
 
 Every material consumption must reference a workload/run and allocation decision.
 
-## 9. Adaptive Recovery Engine
+## 10. Adaptive Recovery Engine
 
 Recovery protocol:
 
@@ -218,7 +306,7 @@ Recovery protocol:
 DETECT -> DIAGNOSE -> CONTAIN -> RECOVER -> VERIFY -> REALLOCATE -> LEARN
 ```
 
-### 9.1 Failure taxonomy
+### 10.1 Failure taxonomy
 
 ```text
 provider_unavailable
@@ -237,7 +325,7 @@ outcome_failure
 unknown
 ```
 
-### 9.2 Containment
+### 10.2 Containment
 
 ```text
 freeze run
@@ -248,7 +336,7 @@ block egress
 stop child runs
 ```
 
-### 9.3 Recovery actions
+### 10.3 Recovery actions
 
 ```text
 retry
@@ -262,15 +350,15 @@ human escalation
 abort / defer
 ```
 
-### 9.4 Economic stop rule
+### 10.4 Economic stop rule
 
 Recovery continues only while expected remaining risk-adjusted value justifies expected recovery cost and additional irreversible risk.
 
 Provider-wide or tool-fleet incidents may trigger portfolio reallocation and shadow-price updates.
 
-## 10. Red-Blue Adversarial Assurance Engine
+## 11. Red-Blue Adversarial Assurance Engine
 
-### 10.1 Red targets
+### 11.1 Red targets
 
 - allocator manipulation;
 - fake value / urgency / scarcity;
@@ -284,7 +372,7 @@ Provider-wide or tool-fleet incidents may trigger portfolio reallocation and sha
 - recovery abuse;
 - cross-agent authority confusion.
 
-### 10.2 Blue responses
+### 11.2 Blue responses
 
 - deny / require approval;
 - tighten policy;
@@ -297,14 +385,14 @@ Provider-wide or tool-fleet incidents may trigger portfolio reallocation and sha
 - revoke authority;
 - terminate execution.
 
-### 10.3 Shadow and Chaos modes
+### 11.3 Shadow and Chaos modes
 
 **Shadow Mode:** compare candidate strategies / defenses without producing external side effects.  
 **Controlled Chaos:** inject bounded failures such as provider outage, timeout, malformed tool response, quota exhaustion, verifier failure or stale resource state.
 
 Red-team execution must itself obey policy and test-environment boundaries.
 
-## 11. Outcome & Failure Intelligence
+## 12. Outcome & Failure Intelligence
 
 Outcome is appendable after run finalization because business/research value may arrive later.
 
@@ -322,7 +410,7 @@ OutcomeRecord:
 
 Failure Intelligence records failure class, suspected cause, resource state, blast radius, attempted recoveries, recovery cost and final result.
 
-## 12. Telemetry and Observability
+## 13. Telemetry and Observability
 
 Prefer OpenTelemetry-compatible trace/metric/event semantics for raw execution observability.
 
@@ -332,6 +420,8 @@ Rasputin-specific economic dimensions include:
 nominal_cost
 shadow_cost
 scarcity_cost
+capacity_fragmentation_cost
+network_locality_cost
 opportunity_cost
 risk_consumed
 irreversibility_consumed
@@ -342,7 +432,7 @@ marginal_utility
 allocation_reason
 ```
 
-## 13. Evidence and Verification
+## 14. Evidence and Verification
 
 Evidence is separate from telemetry and quality.
 
@@ -360,7 +450,7 @@ Canonical Record
 
 Verification intensity is a capital allocation variable. Hidden chain-of-thought is neither required nor claimed.
 
-## 14. Standards / Adapter Strategy
+## 15. Standards / Adapter Strategy
 
 Rasputin should integrate rather than reimplement where appropriate:
 
@@ -378,7 +468,7 @@ TEE/attestation    trust adapters
 
 Core semantics remain vendor-neutral.
 
-## 15. Research / Product Metrics
+## 16. Research / Product Metrics
 
 ### ROCC
 
@@ -395,7 +485,7 @@ Capital allocation benchmark: portfolio utility, verified success, effective cos
 
 Adversarial / resilience benchmark: bypass, unauthorized action, MTTD, MTTR, recovery success/cost, blast radius and portfolio utility under failure/attack.
 
-## 16. Repository Target
+## 17. Repository Target
 
 ```text
 core/
@@ -403,6 +493,8 @@ core/
   portfolio/
   authority/
   resources/
+  federation/
+  placement/
   capital/
   strategy/
   runtime/
@@ -423,10 +515,11 @@ fixtures/
 docs/
 ```
 
-## 17. Implementation Law
+## 18. Implementation Law
 
 ```text
 stable contracts
+before federation automation
 before allocation intelligence
 before autonomous learning
 before market mechanisms

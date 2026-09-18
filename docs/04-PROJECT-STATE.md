@@ -1,7 +1,7 @@
 # Rasputin — Project State
 
-> **Updated:** 2026-09-09  
-> **Architecture:** v7.0 — Sovereign Computational Capital Control Plane  
+> **Updated:** 2026-09-18  
+> **Architecture:** v7.1 — Sovereign Computational Capital Control Plane / Operating System for Computational Capital  
 > **Development mode:** ACTIVE ALPHA / R1 EXECUTABLE CONTRACTS
 
 ## Control State
@@ -9,9 +9,11 @@
 ```text
 v5.0 historical full-domain vision        FROZEN
 v6.0-alpha execution-economics baseline   PRESERVED / HISTORICAL MIGRATION BASE
-v7.0 strategic target                     ACTIVE
+v7.0 strategic baseline                   PRESERVED / SUPERSEDED
+v7.1 strategic target                     ACTIVE
 GATE-V7-R0                                ACCEPTED
-v7 architecture/contracts                 FROZEN FOR R1
+GATE-V7.1-A0                              ACCEPTED
+R1 architecture/contracts                 FROZEN / COMPATIBLE
 Backend R1                                OPEN
 Frontend                                  BLOCKED by accepted backend surface gates
 Integration/Test/Assurance                BLOCKED until relevant implementation exists
@@ -35,7 +37,7 @@ Quality
 Optimization
 ```
 
-v7 core expansion:
+v7.0 core expansion:
 
 ```text
 Workload Portfolio
@@ -54,9 +56,26 @@ Portfolio Reallocation
 RCB / RARB benchmarks
 ```
 
+v7.1 architecture amendment:
+
+```text
+Compute Federation / Resource Fabric
+ExecutionDomain / ComputePool / CapacitySlice
+Topology- and locality-aware placement
+Capacity reservation
+Cross-provider / cross-cluster logical pooling
+Physical-truth preservation
+Training-vs-inference coordination classes
+Capacity fragmentation / network-locality economics
+Placement telemetry / reason codes
+Computational Capital OS positioning
+```
+
 ## Current Objective
 
 Implement **R1 — Executable Canonical Contracts** without introducing R2+ behavior.
+
+v7.1 is intentionally backward-compatible with the admitted R1 scope. Federation target objects and runtime behavior are **not admitted into R1** unless separately gated.
 
 Target R1 objects:
 
@@ -87,7 +106,9 @@ Principal / Organization
  -> Workload Portfolio
  -> Authority / Policy
  -> Resource Intelligence
+ -> Compute Federation / Resource Fabric
  -> Computational Capital Allocation
+ -> Placement
  -> Execution Strategy
  -> Sovereign Execution Control
  -> Telemetry / Evidence / Failure
@@ -122,4 +143,6 @@ Commodity technologies remain adapters unless a proven gap requires native imple
 
 ## Gate Record
 
-`GATE-V7-R0` was accepted on 2026-09-09 after Controller consistency review. Any R1 implementation discovery that contradicts the frozen v7 semantics must return to Controller under the No-Drift Rule.
+- `GATE-V7-R0` was accepted on 2026-09-09 after Controller consistency review.
+- `GATE-V7.1-A0` was accepted on 2026-09-18 as a backward-compatible architecture amendment introducing Compute Federation / Resource Fabric and the Computational Capital OS boundary.
+- R1 remains the active implementation stage. Any R1 discovery that contradicts frozen contract semantics returns to Controller under the No-Drift Rule.
