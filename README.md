@@ -1,11 +1,12 @@
-# Rasputin
+# Rasputin v7.1
 
 > **Sovereign Computational Capital Control Plane**  
-> 面向 Agent 时代的计算资本配置、执行主权、对抗保证与自适应恢复基础设施。
+> **Operating System for Computational Capital**  
+> 面向 Agent 时代的计算资本联邦、配置、执行主权、对抗保证与自适应恢复基础设施。
 
-**Status:** v7.0 Architecture Accepted · R1 Executable Contracts Active  
+**Status:** v7.1 Architecture Amendment Accepted · R1 Executable Contracts Active  
 **Runtime:** Local-first · Vendor-neutral · MCP/A2A-compatible  
-**Architecture:** Portfolio-first · Authority-first · Economics-driven · Evidence-backed · Adversarially tested  
+**Architecture:** Federation-native · Portfolio-first · Authority-first · Economics-driven · Evidence-backed · Adversarially tested  
 **License:** TBD
 
 ---
@@ -63,6 +64,34 @@ Opportunity cost
 
 因此 Rasputin 以有效计算资本成本而不是名义 token 价格做决策。
 
+### Compute federation before placement
+
+Rasputin v7.1 treats heterogeneous compute as a **logical computational-capital pool** without pretending that physically distinct devices are one interchangeable accelerator.
+
+```text
+Cloud GPU / ASIC / CPU / NPU
+Private cluster
+On-prem infrastructure
+Reserved cloud capacity
+Edge / specialized execution domain
+        ↓
+Capability Discovery
+        ↓
+Resource Intelligence
+        ↓
+Compute Federation & Resource Fabric
+        ↓
+Placement + Capital Allocation
+        ↓
+Authorized Execution
+```
+
+The federation preserves physical truth: topology, accelerator compatibility, memory, interconnect bandwidth, latency, locality, region, trust, health and cost remain first-class constraints.
+
+**Logical pooling != physical fusion.**
+
+Tightly coupled training prefers high-bandwidth execution domains. Loosely coupled inference, batch, evaluation and agent workloads may be distributed across domains when policy and economics justify it.
+
 ### Portfolio before routing
 
 普通 router 问：
@@ -107,7 +136,7 @@ REVOKE · REROUTE · RECOVER · ESCALATE · TERMINATE
 
 ---
 
-## v7 Architecture
+## v7.1 Architecture
 
 ```text
                     PRINCIPAL / ORGANIZATION
@@ -120,15 +149,17 @@ REVOKE · REROUTE · RECOVER · ESCALATE · TERMINATE
 +-----------------------------------------------------------+
 | 3. RESOURCE INTELLIGENCE PLANE                            |
 +-----------------------------------------------------------+
-| 4. COMPUTATIONAL CAPITAL ALLOCATOR                        |
+| 4. COMPUTE FEDERATION & RESOURCE FABRIC                   |
 +-----------------------------------------------------------+
-| 5. EXECUTION STRATEGY COMPILER                            |
+| 5. COMPUTATIONAL CAPITAL ALLOCATOR                        |
 +-----------------------------------------------------------+
-| 6. SOVEREIGN EXECUTION CONTROL PLANE                      |
+| 6. EXECUTION STRATEGY COMPILER                            |
 +-----------------------------------------------------------+
-| 7. OUTCOME / TELEMETRY / EVIDENCE / FAILURE INTELLIGENCE  |
+| 7. SOVEREIGN EXECUTION CONTROL PLANE                      |
 +-----------------------------------------------------------+
-| 8. LEARNING & REALLOCATION ENGINE                         |
+| 8. OUTCOME / TELEMETRY / EVIDENCE / FAILURE INTELLIGENCE  |
++-----------------------------------------------------------+
+| 9. LEARNING & REALLOCATION ENGINE                         |
 +-----------------------------------------------------------+
          ^                                   |
          |                                   v
@@ -146,7 +177,7 @@ Red-Blue 与 Adaptive Recovery 是跨层永久控制循环，不是附属安全�
 
 ---
 
-## The v7 Core
+## The v7.1 Core
 
 ### 1. Workload & Portfolio Plane
 
@@ -154,7 +185,7 @@ Red-Blue 与 Adaptive Recovery 是跨层永久控制循环，不是附属安全�
 
 ### 2. Authority & Policy Plane
 
-定义允许发生什么，并在 runtime 强制执行：identity、authorization、data classification、budget、risk、tool/model permissions、HITL、recovery ceiling 与 irreversibility constraints。
+定义允许发生什么，并在 runtime 强制执行：identity、authorization、data classification、budget、risk、tool/model/compute permissions、HITL、recovery ceiling 与 irreversibility constraints。
 
 ### 3. Resource Intelligence Plane
 
@@ -163,26 +194,47 @@ Red-Blue 与 Adaptive Recovery 是跨层永久控制循环，不是附属安全�
 ```text
 Models · Agents · Harnesses · MCP Tools · A2A Agents
 Memory · Retrievers · Verifiers · Human Reviewers
-GPU / Runtime · API Quota · Sandboxes · Attested Environments
+GPU / CPU / NPU / ASIC · Runtime · API Quota · Sandboxes
+Cloud / On-prem / Reserved Capacity · Attested Environments
 ```
 
-资源具有 capability、nominal price、shadow price、health、availability、historical outcome、risk、privacy 与 attestation metadata。
+资源具有 capability、nominal price、shadow price、health、availability、historical outcome、risk、privacy、locality、topology 与 attestation metadata。
 
-### 4. Computational Capital Allocator
+### 4. Compute Federation & Resource Fabric
+
+把不同 provider、region、cluster 与 accelerator 暴露为一个**逻辑计算资本池**，同时保留各自物理边界。
+
+核心对象：
+
+```text
+ExecutionDomain
+ComputePool
+CapacitySlice
+Topology / Interconnect
+PlacementConstraint
+PlacementDecision
+Reservation
+```
+
+它负责 capability discovery、inventory normalization、capacity aggregation、placement、reservation、locality awareness 与 failure-domain isolation。
+
+Rasputin 不要求所有设备协同完成同一个 kernel，也不把 WAN 连接的设备伪装成单一 GPU。它选择**在哪个 execution domain 执行什么 workload**。
+
+### 5. Computational Capital Allocator
 
 核心目标从单请求 routing 升级为 portfolio optimization：
 
 ```text
 maximize Risk-Adjusted Outcome Value
-subject to money / compute / quota / time / risk /
-verification / human-attention / irreversibility / recovery budgets
+subject to money / compute / quota / time / bandwidth / locality /
+risk / verification / human-attention / irreversibility / recovery budgets
 ```
 
 算法路线：deterministic rules → Lagrangian allocation → constrained contextual bandits / bandits-with-knapsacks → offline policy learning → constrained sequential control。
 
-### 5. Execution Strategy Compiler
+### 6. Execution Strategy Compiler
 
-将 allocation 转化为具体策略：
+将 allocation 与 placement 转化为具体策略：
 
 ```text
 pi = (
@@ -193,6 +245,7 @@ pi = (
   memory,
   test_time_compute,
   verification,
+  execution_domain,
   runtime,
   recovery_policy
 )
@@ -200,20 +253,23 @@ pi = (
 
 Multi-Agent 是可选 Execution Strategy；只有边际效用高于边际经济与可靠性成本时才启用。
 
-### 6. Sovereign Execution Control Plane
+### 7. Sovereign Execution Control Plane
 
-负责 prepare → authorize → execute → observe → limit → recover / abort → finalize。MCP、A2A、OpenRouter、LiteLLM、LangGraph 等属于标准或 adapter，不定义 Rasputin。
+负责 prepare → authorize → reserve → place → execute → observe → limit → recover / abort → finalize。MCP、A2A、OpenRouter、LiteLLM、Kubernetes、Slurm、cloud schedulers 与其他 runtimes 属于标准或 adapter，不定义 Rasputin。
 
-### 7. Outcome / Telemetry / Evidence / Failure Intelligence
+### 8. Outcome / Telemetry / Evidence / Failure Intelligence
 
 记录的不只是 token、cost 和 latency，而是：
 
 ```text
 Workload
 Strategy
+ExecutionDomain
 ResourceState
+PlacementDecision
 NominalCost
 ShadowCost
+Network / Locality Cost
 RiskConsumed
 IrreversibilityConsumed
 Failure
@@ -226,11 +282,11 @@ Evidence
 核心长期数据资产：
 
 ```text
-D = {Workload, Context, ResourceState, Strategy,
-     Cost, Risk, Attack, Failure, Recovery, Outcome, Value}
+D = {Workload, Context, ResourceState, ExecutionDomain, Placement,
+     Strategy, Cost, Risk, Attack, Failure, Recovery, Outcome, Value}
 ```
 
-### 8. Learning & Reallocation Engine
+### 9. Learning & Reallocation Engine
 
 ```text
 Outcome
@@ -239,7 +295,7 @@ Outcome
  -> Policy Learning
  -> Safe Deployment
  -> Online Exploration
- -> Capital Reallocation
+ -> Capital + Placement Reallocation
 ```
 
 自动优化永远不得绕过 policy、evaluation、rollback 和 recovery gates。
@@ -475,9 +531,9 @@ Capital Reallocation Efficiency
 | R0 | Strategic Constitution + Threat/Economic Model + contract migration — **ACCEPTED** |
 | R1 | Canonical Workload / Execution / Resource / Capital schemas — **ACTIVE** |
 | R2 | OpenTelemetry-compatible telemetry + Computational Capital Ledger |
-| R3 | Resource Intelligence Registry |
+| R3 | Resource Intelligence Registry + Compute Federation inventory |
 | R4 | Authority / Policy / Runtime Enforcement |
-| R5 | Provider + MCP + execution adapters + supervisor |
+| R5 | Provider + MCP + compute-fabric / execution adapters + supervisor |
 | R6 | Adaptive Recovery Engine v0 |
 | R7 | Outcome / Quality / Failure Intelligence |
 | R8 | Capital Allocator v0 — deterministic / Lagrangian |
@@ -496,9 +552,10 @@ Capital Reallocation Efficiency
 
 - **v5.0** — historical full-domain vision; frozen.
 - **v6.0-alpha** — execution-economics migration baseline; superseded as strategic target but retained for migration history.
-- **v7.0** — active strategic and technical target; `GATE-V7-R0` accepted on 2026-09-09.
+- **v7.0** — accepted strategic baseline; preserved for compatibility and historical reference.
+- **v7.1** — active strategic target; adds Compute Federation / Resource Fabric and the Computational Capital OS boundary without invalidating R1 contracts; `GATE-V7.1-A0` accepted on 2026-09-18.
 
-Current priority is **R1 executable canonical contracts**. R1 must implement the frozen v7 semantics without pulling forward R2+ features.
+Current priority remains **R1 executable canonical contracts**. v7.1 is a backward-compatible architecture amendment: R1 must not be silently expanded to implement federation behavior. Federation inventory, placement and adapters enter only through their admitted later-stage gates.
 
 ---
 
@@ -516,4 +573,4 @@ A new capability enters Rasputin Core only if it materially improves at least on
 
 Otherwise it is an adapter, experiment, backlog item or external dependency.
 
-> **Rasputin decides where intelligence is worth spending — and keeps that decision governable, survivable and learnable.**
+> **Rasputin turns heterogeneous compute into governable computational capital — deciding what deserves capacity, where it should execute, and how that decision remains verifiable, survivable and learnable.**
