@@ -1,14 +1,14 @@
-# Rasputin v7.0 — Technical Architecture
+# Rasputin v7.1 — Technical Architecture
 
-> **Status:** R0 STRATEGIC MIGRATION / PRE-IMPLEMENTATION  
-> **Architecture mode:** portfolio-first · authority-first · stage-gated · evidence-backed · adversarially tested  
-> **Purpose:** freeze v7 architectural boundaries before implementation.
+> **Status:** v7.1 ARCHITECTURE AMENDMENT ACCEPTED / R1 COMPATIBLE  
+> **Architecture mode:** federation-native · portfolio-first · authority-first · stage-gated · evidence-backed · adversarially tested  
+> **Purpose:** define the active v7.1 boundary while preserving the accepted R1 contract baseline.
 
 ## 1. System Objective
 
-Rasputin is a **Sovereign Computational Capital Control Plane**.
+Rasputin is a **Sovereign Computational Capital Control Plane** and an **Operating System for Computational Capital**.
 
-It allocates scarce AI resources across competing workloads, governs the resulting executions, measures real outcomes, survives failure, and learns how to reallocate capital safely.
+It federates heterogeneous compute into a governed logical resource fabric, allocates scarce AI resources across competing workloads, governs the resulting executions, measures real outcomes, survives failure, and learns how to reallocate capital safely.
 
 The portfolio-level objective is conceptually:
 
@@ -64,6 +64,10 @@ Principal / Organization
               -> OutcomeRecord[*]
   -> BudgetLedger[*]
   -> ResourceState[*]
+  -> ExecutionDomain[*]
+  -> ComputePool[*]
+  -> CapacitySlice[*]
+  -> PlacementDecision[*]
   -> Learning / Reallocation Decision[*]
 ```
 
@@ -71,7 +75,7 @@ Principal / Organization
 
 ---
 
-## 3. Eight Core Planes
+## 3. Nine Core Planes
 
 ### 3.1 Workload & Portfolio Plane
 
@@ -157,7 +161,73 @@ attestation state
 
 The Resource Intelligence Plane is broader than a model registry.
 
-### 3.4 Computational Capital Allocator
+### 3.4 Compute Federation & Resource Fabric
+
+This plane turns heterogeneous capacity into a **logical computational-capital pool** while preserving physical execution truth.
+
+It does **not** claim that all accelerators are interchangeable or that geographically separated devices behave as one giant accelerator.
+
+Canonical federation objects include:
+
+```text
+ExecutionDomain
+ComputePool
+CapacitySlice
+Topology
+InterconnectClass
+PlacementConstraint
+PlacementDecision
+Reservation
+FailureDomain
+```
+
+Each execution domain may describe:
+
+```text
+provider / owner
+region / locality
+accelerator family
+compute capability
+memory capacity / bandwidth
+interconnect topology / bandwidth
+network latency
+runtime / scheduler
+availability / reservation state
+cost / shadow price
+trust / attestation
+data-locality constraints
+failure domain
+```
+
+Workloads expose a coordination class such as:
+
+```text
+tightly_coupled_training
+distributed_inference
+batch
+evaluation
+agentic_workflow
+latency_sensitive
+stateful
+embarrassingly_parallel
+```
+
+Placement must respect topology and workload semantics. Tightly coupled training should remain inside suitably interconnected domains; loosely coupled inference, batch, evaluation and agent workloads may span domains when policy, locality and economics permit.
+
+The federation layer owns:
+
+- capability discovery and inventory normalization;
+- logical pool construction;
+- capacity reservation and release;
+- topology- and locality-aware placement;
+- cross-provider / cross-cluster failover eligibility;
+- failure-domain isolation;
+- capacity fragmentation awareness;
+- exposure of placement candidates to the allocator.
+
+Commodity schedulers remain execution adapters. Rasputin owns the cross-domain capital, authority and placement semantics.
+
+### 3.5 Computational Capital Allocator
 
 This is the primary v7 differentiator.
 
@@ -183,7 +253,7 @@ v0 deterministic allocation / explicit scoring
 
 No learned allocator ships without deterministic baseline, offline evaluation, rollback and policy-safe bounds.
 
-### 3.5 Execution Strategy Compiler
+### 3.6 Execution Strategy Compiler
 
 Converts a CapitalAllocation into a concrete ExecutionPlan.
 
@@ -205,14 +275,15 @@ recovery policy
 
 Multi-Agent is an execution strategy, not the product identity.
 
-### 3.6 Sovereign Execution Control Plane
+### 3.7 Sovereign Execution Control Plane
 
 Owns runtime lifecycle:
 
 ```text
 prepare
  -> authorize
- -> reserve capital
+ -> reserve capital / capacity
+ -> place
  -> execute
  -> observe
  -> limit / suspend / revoke
@@ -235,7 +306,7 @@ Required properties:
 - policy-safe fallback;
 - runtime event emission.
 
-### 3.7 Outcome, Telemetry, Evidence & Failure Intelligence Plane
+### 3.8 Outcome, Telemetry, Evidence & Failure Intelligence Plane
 
 Rasputin must separate four classes of truth:
 
@@ -266,7 +337,7 @@ Canonical analytical record:
 
 Raw tracing should prefer OpenTelemetry-compatible semantics where practical. Rasputin adds the economic and authority layer rather than reinventing span transport.
 
-### 3.8 Learning & Reallocation Engine
+### 3.9 Learning & Reallocation Engine
 
 Learning pipeline:
 
@@ -398,6 +469,8 @@ Conceptually:
 EffectiveCost =
     Money
   + QuotaScarcity
+  + CapacityFragmentation
+  + Network / Locality Cost
   + LatencyScarcity
   + RiskCost
   + VerificationCost
@@ -518,8 +591,10 @@ None of these external systems define Rasputin's moat.
 8. Evidence must distinguish declared plan from observed execution.
 9. No automatic policy update bypasses offline evaluation, rollback or Controller gate.
 10. Red-team tooling never gains broader production authority merely because it is a testing component.
-11. Unknown schema / policy major versions fail explicitly.
-12. Human approval is a first-class artifact, not an informal message.
+11. A logical compute pool never erases accelerator compatibility, topology, locality, trust or failure-domain constraints.
+12. Cross-domain placement must be attributable to resource state, policy, allocator version and placement reason.
+13. Unknown schema / policy major versions fail explicitly.
+14. Human approval is a first-class artifact, not an informal message.
 
 ---
 
@@ -532,6 +607,8 @@ rasputin/
     portfolio/
     authority/
     resources/
+    federation/
+    placement/
     capital/
     strategy/
     runtime/
@@ -595,6 +672,7 @@ Optimization claims without benchmark evidence are not release claims.
 
 - **v5.0** — historical full-domain vision; frozen.
 - **v6.0-alpha** — execution-economics migration baseline; preserved for migration history.
-- **v7.0** — active strategic and technical target.
+- **v7.0** — accepted strategic baseline; preserved for compatibility and migration history.
+- **v7.1** — active strategic target; adds Compute Federation / Resource Fabric and placement semantics without invalidating the accepted R1 contract baseline.
 
-Current implementation priority is **R0 contract migration and architecture acceptance**. Existing v6 concepts that remain valid should be migrated, not blindly discarded.
+Current implementation priority remains **R1 executable canonical contracts**. The v7.1 federation amendment is intentionally stage-gated: R1 contracts are not silently expanded. Federation inventory, placement, reservation and fabric adapters enter only when admitted by later gates.
